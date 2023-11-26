@@ -13,12 +13,16 @@ export class UserService {
         } else return user;
     }
 
-    getAll() {
-        return this.prisma.user.findMany();
+    async findOneWithUserName(userName: string) {
+        return await this.prisma.user.findFirst({ where: { UserName: userName } });
     }
 
-    create(dto: User) {
-        return this.prisma.user.create({
+    async getAll() {
+        return await this.prisma.user.findMany();
+    }
+
+    async create(dto: User) {
+        return await this.prisma.user.create({
             data: dto,
         });
     }

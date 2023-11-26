@@ -45,7 +45,7 @@ model Order {
 
 model User {
   Id             Int     @id @default(autoincrement())
-  UserName       String
+  UserName       String  @unique
   Password       String
   TelegramChatId String
   Role           Role
