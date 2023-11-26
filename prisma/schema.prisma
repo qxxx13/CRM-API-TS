@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  pending
+  fulfilled
+  rejected
+}
+
+enum Visit {
+  primary
+  repeated
+}
+
+enum Role {
+  master
+  admin
+}
+
+model Order {
+  Id                Int      @id @default(autoincrement())
+  Title             String
+  Description       String
+  Address           String
+  OrderDateTime     DateTime
+  Visit             Visit
+  ClientPhoneNumber String
+  ClientName        String
+  Master            User     @relation(fields: [MasterId], references: [Id])
+  MasterId          Int
+  AnnouncedPrice    Int
+  Price             Int
+  Status            Status
+  TelephoneRecord   String
+}
+
+model User {
+  Id             Int     @id @default(autoincrement())
+  UserName       String
+  Password       String
+  TelegramChatId String
+  Role           Role
+  Order          Order[]
+}
