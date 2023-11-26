@@ -37,9 +37,9 @@ model Order {
   ClientName        String
   Master            User     @relation(fields: [MasterId], references: [Id])
   MasterId          Int
-  AnnouncedPrice    Int
+  AnnouncedPrice    Int      @default(0)
   Price             Int
-  Status            Status
+  Status            Status   @default(pending)
   TelephoneRecord   String
 }
 

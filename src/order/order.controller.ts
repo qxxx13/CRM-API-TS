@@ -6,12 +6,17 @@ import { Order, Status } from '@prisma/client';
 export class OrderController {
     constructor(private readonly orderService: OrderService) {}
 
+    @Get(':id')
+    async getOrderById(@Param('id') id: string) {
+        return this.orderService.getById(id);
+    }
+
     @Get('')
     async getOrders() {
         return this.orderService.getAll();
     }
 
-    @Post()
+    @Post('')
     @UsePipes(new ValidationPipe())
     async create(@Body() dto: Order) {
         return this.orderService.create(dto);
