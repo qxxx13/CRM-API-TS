@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UsePipes, ValidationPipe, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Get, Post, UsePipes, ValidationPipe, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order, Status } from '@prisma/client';
 
@@ -12,8 +12,13 @@ export class OrderController {
     }
 
     @Get('')
-    async getOrders() {
-        return this.orderService.getAll();
+    async getOrders(
+        @Query('page') page: number = 1,
+        @Query('perPage') perPage: number = 10,
+        @Query('status') status: Status | 'all' = 'all',
+        @Query('searchValue') searchValue: string = '',
+    ) {
+        return this.orderService.getAll(page, perPage, status, searchValue);
     }
 
     @Post('')
@@ -25,5 +30,10 @@ export class OrderController {
     @Patch(':id')
     async toggleStatus(@Param('id') @Body() id: string, status: Status) {
         return this.orderService.toggleStatus(id, status);
+    }
+
+    @Delete(':id')
+    async deleteOrder(@Param('id') id: string) {
+        return this.orderService.delete(id);
     }
 }

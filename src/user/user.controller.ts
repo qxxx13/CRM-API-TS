@@ -7,12 +7,12 @@ export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Get(':id')
-    async getOrderById(@Param('id') id: string) {
+    async getUserById(@Param('id') id: string) {
         return this.userService.getById(id);
     }
 
     @Get('')
-    async getOrders() {
+    async getAllUsers() {
         return this.userService.getAll();
     }
 

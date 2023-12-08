@@ -28,7 +28,6 @@ enum Role {
 
 model Order {
   Id                Int      @id @default(autoincrement())
-  Title             String
   Description       String
   Address           String
   OrderDateTime     DateTime
@@ -37,15 +36,18 @@ model Order {
   ClientName        String
   Master            User     @relation(fields: [MasterId], references: [Id])
   MasterId          Int
+  MasterName        String
   AnnouncedPrice    Int      @default(0)
-  Price             Int
+  Price             Int      @default(0)
   Status            Status   @default(pending)
   TelephoneRecord   String
+  Latitude          Float
+  Longitude         Float
 }
 
 model User {
   Id             Int     @id @default(autoincrement())
-  UserName       String  @unique
+  UserName       String
   Password       String
   TelegramChatId String
   Role           Role
