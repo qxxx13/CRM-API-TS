@@ -14,6 +14,7 @@ enum Status {
   pending
   fulfilled
   rejected
+  atWork
 }
 
 enum Visit {

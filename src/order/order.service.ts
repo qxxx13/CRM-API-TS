@@ -3,10 +3,13 @@ import { Status, Order, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { createPaginator } from 'prisma-pagination';
 import { OrderDto } from './order.dto';
+import { BotService } from 'src/bot/bot.service';
 
 @Injectable()
 export class OrderService {
     constructor(private prisma: PrismaService) {}
+
+    bot = new BotService(this.prisma);
 
     async getById(id: string) {
         const order = await this.prisma.order.findUnique({ where: { Id: +id } });
@@ -15,7 +18,7 @@ export class OrderService {
         } else return order;
     }
 
-    getAll(page: number, perPage: number, status: Status | 'all', searchValue: string) {
+    async getAll(page: number, perPage: number, status: Status | 'all', searchValue: string) {
         const paginate = createPaginator({ perPage });
 
         const searchByStatus = status !== 'all' ? status : {};
@@ -33,11 +36,12 @@ export class OrderService {
             { page: page },
         );
 
-        return orders;
+        return await orders;
     }
 
-    create(dto: Order) {
-        return this.prisma.order.create({
+    async create(dto: Order) {
+        await this.bot.botMessage(dto.MasterId, dto);
+        return await this.prisma.order.create({
             data: dto,
         });
     }
