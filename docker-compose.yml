@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  nest-api:
+    container_name: crm-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5555:5555
+    depends_on:
+      - postgres
+    env_file:
+      - .ENV
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+  postgres:
+    image: postgres:16
+    container_name: crm-db
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - .ENV
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
+    name: crmdb
