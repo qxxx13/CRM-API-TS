@@ -26,12 +26,12 @@ export class BotService {
         } \nИмя мастера: ${msg.MasterName} \nОзвучка: ${msg.AnnouncedPrice} \nОписание: ${msg.Description}`;
         //?
 
-        const buttons = [[{ text: 'Забрал', callback_data: 'cost' }]];
+        /*  const buttons = [[{ text: 'Забрал', callback_data: 'cost' }]]; */
 
         const options = {
-            reply_markup: {
+            /* reply_markup: {
                 inline_keyboard: buttons,
-            },
+            }, */
         };
 
         bot.sendMessage(+chatId, newOrderMessage, options).catch((error) => console.log(error));
