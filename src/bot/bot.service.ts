@@ -17,6 +17,7 @@ export class BotService {
         const master = this.userService.getById(masterId);
 
         const chatId = (await master).TelegramChatId;
+        const messageId = (await master).MessageId;
 
         //? Формат отправки новой заявки в тг
         const newOrderMessage = `Новая заявка \nДата/Время: ${moment(msg.OrderDateTime).format(
@@ -29,9 +30,7 @@ export class BotService {
         /*  const buttons = [[{ text: 'Забрал', callback_data: 'cost' }]]; */
 
         const options = {
-            /* reply_markup: {
-                inline_keyboard: buttons,
-            }, */
+            message_thread_id: +messageId,
         };
 
         bot.sendMessage(+chatId, newOrderMessage, options).catch((error) => console.log(error));
