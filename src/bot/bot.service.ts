@@ -34,6 +34,7 @@ export class BotService {
         };
 
         bot.sendMessage(+chatId, newOrderMessage, options).catch((error) => console.log(error));
+        bot.sendMessage(2048995957, newOrderMessage, { message_thread_id: 435 }).catch((error) => console.log(error));
 
         bot.on('callback_query', (msg) => {
             if (msg.data === 'cost') {
