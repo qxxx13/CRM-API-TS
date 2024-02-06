@@ -1,23 +1,24 @@
-import { Status, User, Visit } from '@prisma/client';
+import { OrderStatus, User, Visit } from '@prisma/client';
 
 export type OrderDto = {
     data: {
         Id: number;
         Description: string;
         Address: string;
-        OrderDateTime: Date;
+        Date: Date;
+        Time?: string;
         Visit: Visit;
         ClientPhoneNumber: string;
-        ClientName: string;
-        Master: User;
+        ClientName?: string;
         MasterId: number;
-        MasterName: string;
-        AnnouncedPrice: number;
-        Price: number;
-        Status: Status;
-        TelephoneRecord: string;
-        Latitude: number;
-        Longitude: number;
+        AnnouncedPrice: string;
+        Status: OrderStatus;
+        Price: string;
+        TelephoneRecord?: string;
+        Latitude?: number;
+        Longitude?: number;
+        MasterName?: string;
+        Master: User;
     }[];
 
     meta: {
