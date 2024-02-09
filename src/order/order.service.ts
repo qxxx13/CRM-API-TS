@@ -72,6 +72,18 @@ export class OrderService {
         });
     }
 
+    async toggleMasterSalary(id: string, salary: string) {
+        const order = await this.getById(id);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                MasterSalary: +salary,
+            },
+        });
+    }
+
     async delete(id: string) {
         return await this.prisma.order.delete({ where: { Id: +id } });
     }

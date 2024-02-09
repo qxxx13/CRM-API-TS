@@ -23,9 +23,13 @@ model Order {
   TelephoneRecord   String?
   Latitude          Float?
   Longitude         Float?
+  Total             Int         @default(0)
+  Expenses          Int         @default(0)
   MasterName        String?
   Comments          String?
   Master            User        @relation(fields: [MasterId], references: [Id])
+  MessageId         String?
+  MasterSalary      Int         @default(0)
 }
 
 model User {
@@ -59,6 +63,7 @@ enum UserStatus {
 enum Visit {
   primary // Первичный
   repeated // Повторный
+  guarantee //Гарантия
 }
 
 enum Role {

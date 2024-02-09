@@ -17,6 +17,11 @@ export class UserService {
         return await this.prisma.user.findFirst({ where: { UserName: userName } });
     }
 
+    async getInterestRateById(id: string) {
+        const user = this.prisma.user.findFirst({ where: { Id: +id } });
+        return (await user).InterestRate;
+    }
+
     async getAll() {
         return await this.prisma.user.findMany();
     }
@@ -37,5 +42,9 @@ export class UserService {
                 Status: status,
             },
         });
+    }
+
+    async delete(id: string) {
+        return await this.prisma.user.delete({ where: { Id: +id } });
     }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
 
@@ -20,5 +20,15 @@ export class UserController {
     @UsePipes(new ValidationPipe())
     async create(@Body() dto: User) {
         return this.userService.create(dto);
+    }
+
+    @Delete(':id')
+    async deleteOrder(@Param('id') id: string) {
+        return this.userService.delete(id);
+    }
+
+    @Get('interest/:id')
+    async getUserInterestRate(@Param('id') id: string) {
+        return this.userService.getInterestRateById(id);
     }
 }

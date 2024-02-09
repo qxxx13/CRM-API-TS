@@ -34,7 +34,19 @@ export class OrderController {
 
     @Patch('price')
     async togglePrice(@Query('id') id: string, @Query('price') price: string) {
+        this.orderService.toggleStatus(id, 'fulfilled');
         return this.orderService.togglePrice(id, price);
+    }
+
+    @Patch('masterSalary')
+    async toggleMasterSalary(@Query('id') id: string, @Query('price') price: string) {
+        return this.orderService.toggleMasterSalary(id, price);
+    }
+
+    @Get('masterId/:id')
+    async getMasterIdByOrderId(@Param('id') id: string) {
+        const order = this.orderService.getById(id);
+        return (await order).MasterId;
     }
 
     @Delete(':id')

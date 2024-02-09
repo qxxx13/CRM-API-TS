@@ -26,7 +26,8 @@ export class BotService {
         const { Date, ClientPhoneNumber, Latitude, Longitude, MasterId, TelephoneRecord, ...other } = order;
 
         const orderDate = moment(Date).format('DD.MM.YY');
-        const orderClientPhoneNumber = ClientPhoneNumber.replaceAll(' ', '');
+
+        const orderClientPhoneNumber = ClientPhoneNumber.replaceAll('-', '');
 
         const newOrderMessageArr = Object.entries(other).map(([key, value]) => {
             let newOrderMessage = '';
