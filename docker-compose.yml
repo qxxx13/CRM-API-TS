@@ -37,3 +37,5 @@ services:
 volumes:
   postgres:
     name: crm-db
+  pgadmin-dаta:
+
