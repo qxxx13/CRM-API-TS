@@ -32,10 +32,10 @@ services:
     ports:
       - "5050:80"
     volumes:
-      - pgadmin_dаta:/var/lib/pgadmin
+      - pgadminData:/var/lib/pgadmin
 
 volumes:
   postgres:
     name: crm-db
-  pgadmin_dаta:
+  pgadminData:
 
