@@ -111,8 +111,8 @@ export class OrderService {
         });
     }
 
-    /* async getMessageId(orderId: string) {
+    async getMessageId(orderId: string) {
         const order = await this.getById(orderId);
-        return this.prisma.order.
-    } */
+        return order.MessageId;
+    }
 }

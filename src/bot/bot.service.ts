@@ -55,12 +55,14 @@ ${translate(order.Status)}
 
         const newOrderMessageArr = newOrderMessage.split('\n');
 
+        const orderMessageId = this.orderService.getMessageId(String(order.Id));
+
         const takeOrderOptions = {
             message_thread_id: +messageId,
             reply_markup: {
                 inline_keyboard: [
                     [
-                        { text: 'Взять', callback_data: 'Take' },
+                        { text: 'Принять', callback_data: 'Take' },
                         { text: 'Отклонить', callback_data: 'Reject' },
                     ],
                 ],
@@ -137,7 +139,7 @@ ${translate(order.Status)}
 
                 bot.editMessageText(editedOrderMessage, {
                     chat_id: opt.chat_id,
-                    message_id: opt.message_id,
+                    message_id: +orderMessageId,
                     reply_markup: OrderOptions,
                 });
             }
@@ -158,7 +160,7 @@ ${translate(order.Status)}
 
                 bot.editMessageText(editedOrderMessage, {
                     chat_id: opt.chat_id,
-                    message_id: opt.message_id,
+                    message_id: +orderMessageId,
                     reply_markup: atWorkOrderOptions,
                 });
 
@@ -179,7 +181,7 @@ ${translate(order.Status)}
 
                 bot.editMessageText(editedOrderMessage, {
                     chat_id: opt.chat_id,
-                    message_id: opt.message_id,
+                    message_id: +orderMessageId,
                     reply_markup: ReturnToOrderOptions,
                 });
 
