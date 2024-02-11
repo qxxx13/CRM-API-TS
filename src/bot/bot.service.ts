@@ -40,16 +40,16 @@ export class BotService {
         /* newOrderMessageArr.unshift(`Date: ${orderDate} \n`, `ClientPhoneNumber: ${orderClientPhoneNumber} \n`); */
 
         const newOrderMessage = `#${order.Id}
-        ${order.Status}
-        Дата:${orderDate}
-        Время:${order.Time}
-        ${orderClientPhoneNumber}
-        Адрес:${order.Address}
-        Визит:${order.Visit}
-        Клиент:${order.ClientName}
-        Имя мастера:${order.MasterName}
-        Озвучка:${order.AnnouncedPrice}
-        Описание:${order.Description}`;
+${order.Status}
+Дата:${orderDate}
+Время:${order.Time}
+${orderClientPhoneNumber}
+Адрес:${order.Address}
+Визит:${order.Visit}
+Клиент:${order.ClientName}
+Имя мастера:${order.MasterName}
+Озвучка:${order.AnnouncedPrice}
+Описание:${order.Description}`;
 
         const takeOrderOptions = {
             message_thread_id: +messageId,
