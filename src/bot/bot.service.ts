@@ -43,7 +43,7 @@ export class BotService {
 ${order.Status}
 Дата:${orderDate}
 Время:${order.Time}
-${orderClientPhoneNumber}
+Номер:${orderClientPhoneNumber}
 Адрес:${order.Address}
 Визит:${order.Visit}
 Клиент:${order.ClientName}
