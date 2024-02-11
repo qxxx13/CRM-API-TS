@@ -144,11 +144,22 @@ ${translate(order.Status)}
                 });
 
                 this.userService.toggleStatus(String(masterId), 'wentForSparePart');
+                this.orderService.toggleStatus(String(order.Id), 'masterWentForSparePart');
             }
 
             if (action === 'ReturnToOrder') {
-                bot.editMessageReplyMarkup(atWorkOrderOptions, opt);
+                newOrderMessageArr[1] = 'В работе';
+
+                const editedOrderMessage = newOrderMessageArr.join('\n');
+
+                bot.editMessageText(editedOrderMessage, {
+                    chat_id: opt.chat_id,
+                    message_id: +orderMessageId,
+                    reply_markup: atWorkOrderOptions,
+                });
+
                 this.userService.toggleStatus(String(masterId), 'atWork');
+                this.orderService.toggleStatus(String(order.Id), 'atWork');
             }
         });
     }
