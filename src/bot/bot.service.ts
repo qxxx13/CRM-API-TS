@@ -138,8 +138,8 @@ ${translate(order.Status)}
                 bot.editMessageText(editedOrderMessage, {
                     chat_id: opt.chat_id,
                     message_id: opt.message_id,
+                    reply_markup: OrderOptions,
                 });
-                bot.editMessageReplyMarkup(OrderOptions, opt);
             }
 
             if (action === 'Reject') {
@@ -159,12 +159,12 @@ ${translate(order.Status)}
                 bot.editMessageText(editedOrderMessage, {
                     chat_id: opt.chat_id,
                     message_id: opt.message_id,
+                    reply_markup: atWorkOrderOptions,
                 });
 
                 /* const index = newOrderMessageArr.indexOf('Status: pending \n');
                 newOrderMessageArr[index] = 'Status: atWork \n';
                 const editOrderMessage = newOrderMessageArr.join(' '); */
-                bot.editMessageReplyMarkup(atWorkOrderOptions, opt);
             }
 
             /* if (action === 'CameIn') {
@@ -180,8 +180,9 @@ ${translate(order.Status)}
                 bot.editMessageText(editedOrderMessage, {
                     chat_id: opt.chat_id,
                     message_id: opt.message_id,
+                    reply_markup: ReturnToOrderOptions,
                 });
-                bot.editMessageReplyMarkup(ReturnToOrderOptions, opt);
+
                 this.userService.toggleStatus(String(masterId), 'wentForSparePart');
             }
 
