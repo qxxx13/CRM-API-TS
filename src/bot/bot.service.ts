@@ -60,7 +60,7 @@ export class BotService {
                     { text: 'Отъехал за ЗЧ', callback_data: 'WentForSparePart' },
                     {
                         text: 'Закрыть заявку',
-                        url: `http://77.91.84.85/closeorder/${order.Id}`,
+                        url: `77.91.84.85/closeorder/${order.Id}`,
                         callback_data: 'CloseOrder',
                     },
                 ],
@@ -74,7 +74,7 @@ export class BotService {
                     { text: 'Отъехал за ЗЧ', callback_data: 'WentForSparePart' },
                     {
                         text: 'Закрыть заявку',
-                        url: `http://77.91.84.85/closeorder/${order.Id}`,
+                        url: `77.91.84.85/closeorder/${order.Id}`,
                         callback_data: 'CloseOrder',
                     },
                 ],
@@ -87,7 +87,7 @@ export class BotService {
                     { text: 'Отъехал за ЗЧ', callback_data: 'WentForSparePart' },
                     {
                         text: 'Закрыть заявку',
-                        url: `http://77.91.84.85/closeorder/${order.Id}`,
+                        url: `77.91.84.85/closeorder/${order.Id}`,
                         callback_data: 'CloseOrder',
                     },
                 ],
