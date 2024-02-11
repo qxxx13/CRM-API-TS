@@ -49,8 +49,10 @@ model User {
 enum OrderStatus {
   pending // Ожидает
   fulfilled // Успешно
-  rejected // Отказ
-  atWork // В работе
+  rejectedByClient // Отказ клиента
+  rejectedByMaster // Отказ мастера
+  atWork // В 
+  active //активная заявка
 }
 
 enum UserStatus {

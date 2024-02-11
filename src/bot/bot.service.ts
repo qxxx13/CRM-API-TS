@@ -39,7 +39,17 @@ export class BotService {
 
         /* newOrderMessageArr.unshift(`Date: ${orderDate} \n`, `ClientPhoneNumber: ${orderClientPhoneNumber} \n`); */
 
-        const newOrderMessage = `#${order.Id} \n ${order.Status} \n Дата:${orderDate} \n Время:${order.Time} \n ${orderClientPhoneNumber} \n Адрес:${order.Address} \n Визит:${order.Visit} \n Клиент:${order.ClientName} \n Имя мастера:${order.MasterName} \n Озвучка:${order.AnnouncedPrice} \n Описание:${order.Description}`;
+        const newOrderMessage = `#${order.Id}
+        ${order.Status}
+        Дата:${orderDate}
+        Время:${order.Time}
+        ${orderClientPhoneNumber}
+        Адрес:${order.Address}
+        Визит:${order.Visit}
+        Клиент:${order.ClientName}
+        Имя мастера:${order.MasterName}
+        Озвучка:${order.AnnouncedPrice}
+        Описание:${order.Description}`;
 
         const takeOrderOptions = {
             message_thread_id: +messageId,
@@ -117,6 +127,7 @@ export class BotService {
             }
 
             if (action === 'Reject') {
+                this.orderService.toggleStatus(String(order.Id), 'rejectedByMaster');
                 bot.sendMessage(opt.chat_id, 'Отменил заявку', { message_thread_id: opt.message_thread_id });
                 bot.deleteMessage(opt.chat_id, opt.message_id);
             }
