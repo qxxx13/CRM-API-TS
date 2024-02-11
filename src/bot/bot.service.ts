@@ -55,8 +55,6 @@ ${translate(order.Status)}
 
         const newOrderMessageArr = newOrderMessage.split('\n');
 
-        const orderMessageId = this.orderService.getMessageId(String(order.Id));
-
         const takeOrderOptions = {
             message_thread_id: +messageId,
             reply_markup: {
@@ -129,6 +127,8 @@ ${translate(order.Status)}
             };
 
             this.orderService.toggleMessageId(String(order.Id), String(opt.message_id));
+
+            const orderMessageId = this.orderService.getMessageId(String(order.Id));
 
             if (action === 'Take') {
                 this.orderService.toggleStatus(String(order.Id), 'active');
