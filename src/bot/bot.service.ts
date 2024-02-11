@@ -93,12 +93,9 @@ ${translate(order.Status)}
                 message_id: msg.message_id,
                 message_thread_id: msg.message_thread_id,
             };
-
-            this.orderService.toggleMessageId(String(order.Id), String(opt.message_id));
+            await this.orderService.toggleMessageId(String(order.Id), String(opt.message_id));
 
             const orderMessageId = await this.orderService.getMessageId(String(order.Id));
-
-            bot.sendMessage(opt.chat_id, orderMessageId);
 
             if (action === 'Take') {
                 this.orderService.toggleStatus(String(order.Id), 'active');
