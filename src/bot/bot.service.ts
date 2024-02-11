@@ -39,17 +39,7 @@ export class BotService {
 
         /* newOrderMessageArr.unshift(`Date: ${orderDate} \n`, `ClientPhoneNumber: ${orderClientPhoneNumber} \n`); */
 
-        const newOrderMessage = `#${order.Id} \n 
-                                ${order.Status} \n 
-                                Дата:${orderDate} \n 
-                                Время:${order.Time} \n 
-                                ${orderClientPhoneNumber} \n 
-                                Адрес:${order.Address} \n 
-                                Визит:${order.Visit} \n 
-                                Клиент:${order.ClientName} \n 
-                                Имя мастера:${order.MasterName} \n 
-                                Озвучка:${order.AnnouncedPrice} \n 
-                                Описание:${order.Description}`;
+        const newOrderMessage = `#${order.Id} \n ${order.Status} \n Дата:${orderDate} \n Время:${order.Time} \n ${orderClientPhoneNumber} \n Адрес:${order.Address} \n Визит:${order.Visit} \n Клиент:${order.ClientName} \n Имя мастера:${order.MasterName} \n Озвучка:${order.AnnouncedPrice} \n Описание:${order.Description}`;
 
         const takeOrderOptions = {
             message_thread_id: +messageId,
@@ -138,11 +128,7 @@ export class BotService {
                 /* const index = newOrderMessageArr.indexOf('Status: pending \n');
                 newOrderMessageArr[index] = 'Status: atWork \n';
                 const editOrderMessage = newOrderMessageArr.join(' '); */
-                /*  bot.editMessageText(editOrderMessage, {
-                    chat_id: opt.chat_id,
-                    message_id: opt.message_id,
-                    reply_markup: atWorkOrderOptions,
-                }); */
+                bot.editMessageReplyMarkup(atWorkOrderOptions, opt);
             }
 
             /* if (action === 'CameIn') {
