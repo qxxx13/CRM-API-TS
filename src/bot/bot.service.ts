@@ -123,6 +123,7 @@ ${order.Status}
             };
 
             if (action === 'Take') {
+                this.orderService.toggleStatus(String(order.Id), 'active');
                 bot.editMessageReplyMarkup(OrderOptions, opt);
             }
 
