@@ -17,29 +17,39 @@ export class BotService {
 
         const master = this.userService.getById(masterId);
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const interestRate = (await master).InterestRate / 100;
 
         const chatId = (await master).TelegramChatId;
         const messageId = (await master).MessageId;
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { Date, ClientPhoneNumber, Latitude, Longitude, MasterId, TelephoneRecord, ...other } = order;
+        /* const { Date, ClientPhoneNumber, Latitude, Longitude, MasterId, TelephoneRecord, ...other } = order; */
 
-        const orderDate = moment(Date).format('DD.MM.YY');
+        const orderDate = moment(order.Date).format('DD.MM.YY');
 
-        const orderClientPhoneNumber = ClientPhoneNumber.replaceAll('-', '');
+        const orderClientPhoneNumber = order.ClientPhoneNumber.replaceAll('-', '');
 
-        const newOrderMessageArr = Object.entries(other).map(([key, value]) => {
+        /* const newOrderMessageArr = Object.entries(other).map(([key, value]) => {
             let newOrderMessage = '';
             if (value !== null && value !== '-') {
                 newOrderMessage = `${key}: ${value} \n`;
             }
             return newOrderMessage;
-        });
+        }); */
 
-        newOrderMessageArr.unshift(`Date: ${orderDate} \n`, `ClientPhoneNumber: ${orderClientPhoneNumber} \n`);
+        /* newOrderMessageArr.unshift(`Date: ${orderDate} \n`, `ClientPhoneNumber: ${orderClientPhoneNumber} \n`); */
 
-        const newOrderMessage = newOrderMessageArr.join(' ');
+        const newOrderMessage = `#${order.Id} \n 
+                                ${order.Status} \n 
+                                Дата:${orderDate} \n 
+                                Время:${order.Time} \n 
+                                ${orderClientPhoneNumber} \n 
+                                Адрес:${order.Address} \n 
+                                Визит:${order.Visit} \n 
+                                Клиент:${order.ClientName} \n 
+                                Имя мастера:${order.MasterName} \n 
+                                Озвучка:${order.AnnouncedPrice} \n 
+                                Описание:${order.Description}`;
 
         const takeOrderOptions = {
             message_thread_id: +messageId,
@@ -57,7 +67,6 @@ export class BotService {
             inline_keyboard: [
                 [
                     { text: 'В работе', callback_data: 'AtWork' },
-                    { text: 'Отъехал за ЗЧ', callback_data: 'WentForSparePart' },
                     {
                         text: 'Закрыть заявку',
                         url: `77.91.84.85/closeorder/${order.Id}`,
@@ -70,7 +79,6 @@ export class BotService {
         const atWorkOrderOptions = {
             inline_keyboard: [
                 [
-                    { text: 'Зашел', callback_data: 'CameIn' },
                     { text: 'Отъехал за ЗЧ', callback_data: 'WentForSparePart' },
                     {
                         text: 'Закрыть заявку',
@@ -81,7 +89,7 @@ export class BotService {
             ],
         };
 
-        const cameInOrderOptions = {
+        /* const cameInOrderOptions = {
             inline_keyboard: [
                 [
                     { text: 'Отъехал за ЗЧ', callback_data: 'WentForSparePart' },
@@ -92,15 +100,15 @@ export class BotService {
                     },
                 ],
             ],
-        };
+        }; */
 
         const ReturnToOrderOptions = {
             inline_keyboard: [[{ text: 'Вернулся', callback_data: 'ReturnToOrder' }]],
         };
 
-        const nullOpt = {
+        /* const nullOpt = {
             inline_keyboard: [[]],
-        };
+        }; */
 
         bot.sendMessage(+chatId, newOrderMessage, takeOrderOptions).catch((error) => console.log(error));
         //bot.sendMessage(-1002048995957, newOrderMessage, { message_thread_id: 4 }).catch((error) => console.log(error));
@@ -127,20 +135,20 @@ export class BotService {
                 this.orderService.toggleStatus(String(order.Id), 'atWork');
                 this.userService.toggleStatus(String(masterId), 'atWork');
 
-                const index = newOrderMessageArr.indexOf('Status: pending \n');
+                /* const index = newOrderMessageArr.indexOf('Status: pending \n');
                 newOrderMessageArr[index] = 'Status: atWork \n';
-                const editOrderMessage = newOrderMessageArr.join(' ');
-                bot.editMessageText(editOrderMessage, {
+                const editOrderMessage = newOrderMessageArr.join(' '); */
+                /*  bot.editMessageText(editOrderMessage, {
                     chat_id: opt.chat_id,
                     message_id: opt.message_id,
                     reply_markup: atWorkOrderOptions,
-                });
+                }); */
             }
 
-            if (action === 'CameIn') {
+            /* if (action === 'CameIn') {
                 bot.editMessageReplyMarkup(cameInOrderOptions, opt);
                 this.userService.toggleStatus(String(masterId), 'atWork');
-            }
+            } */
 
             if (action === 'WentForSparePart') {
                 bot.editMessageReplyMarkup(ReturnToOrderOptions, opt);
@@ -148,11 +156,11 @@ export class BotService {
             }
 
             if (action === 'ReturnToOrder') {
-                bot.editMessageReplyMarkup(cameInOrderOptions, opt);
+                bot.editMessageReplyMarkup(atWorkOrderOptions, opt);
                 this.userService.toggleStatus(String(masterId), 'atWork');
             }
 
-            if (action === 'CloseOrder') {
+            /* if (action === 'CloseOrder') {
                 bot.editMessageReplyMarkup(nullOpt, opt);
 
                 const sumToSend = +order.Price * interestRate;
@@ -172,7 +180,7 @@ export class BotService {
                 });
 
                 this.orderService.toggleStatus(String(order.Id), 'fulfilled');
-            }
+            } */
         });
     }
 }
