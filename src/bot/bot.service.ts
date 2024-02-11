@@ -4,6 +4,7 @@ import { UserService } from 'src/user/user.service';
 import * as TelegramBot from 'node-telegram-bot-api';
 import * as moment from 'moment';
 import { OrderService } from 'src/order/order.service';
+import { translate } from 'src/common/translate';
 
 @Injectable()
 export class BotService {
@@ -40,16 +41,19 @@ export class BotService {
         /* newOrderMessageArr.unshift(`Date: ${orderDate} \n`, `ClientPhoneNumber: ${orderClientPhoneNumber} \n`); */
 
         const newOrderMessage = `#${order.Id}
-${order.Status}
-Дата:${orderDate}
-Время:${order.Time}
-Номер:${orderClientPhoneNumber}
-Адрес:${order.Address}
-Визит:${order.Visit}
-Клиент:${order.ClientName}
-Имя мастера:${order.MasterName}
-Озвучка:${order.AnnouncedPrice}
-Описание:${order.Description}`;
+${translate(order.Status)}
+——————
+Дата: ${orderDate}
+Время: ${order.Time}
+Номер: ${orderClientPhoneNumber}
+Адрес: ${order.Address}
+Визит: ${translate(order.Visit)}
+Клиент: ${order.ClientName}
+Имя мастера: ${order.MasterName}
+Озвучка: ${order.AnnouncedPrice}
+Описание: ${order.Description}`;
+
+        const newOrderMessageArr = newOrderMessage.split('\n');
 
         const takeOrderOptions = {
             message_thread_id: +messageId,
@@ -122,8 +126,19 @@ ${order.Status}
                 message_thread_id: msg.message_thread_id,
             };
 
+            this.orderService.toggleMessageId(String(order.Id), String(opt.message_id));
+
             if (action === 'Take') {
                 this.orderService.toggleStatus(String(order.Id), 'active');
+
+                newOrderMessageArr[1] = 'Принята';
+
+                const editedOrderMessage = newOrderMessageArr.join('\n');
+
+                bot.editMessageText(editedOrderMessage, {
+                    chat_id: opt.chat_id,
+                    message_id: opt.message_id,
+                });
                 bot.editMessageReplyMarkup(OrderOptions, opt);
             }
 
@@ -137,6 +152,15 @@ ${order.Status}
                 this.orderService.toggleStatus(String(order.Id), 'atWork');
                 this.userService.toggleStatus(String(masterId), 'atWork');
 
+                newOrderMessageArr[1] = 'В работе';
+
+                const editedOrderMessage = newOrderMessageArr.join('\n');
+
+                bot.editMessageText(editedOrderMessage, {
+                    chat_id: opt.chat_id,
+                    message_id: opt.message_id,
+                });
+
                 /* const index = newOrderMessageArr.indexOf('Status: pending \n');
                 newOrderMessageArr[index] = 'Status: atWork \n';
                 const editOrderMessage = newOrderMessageArr.join(' '); */
@@ -149,6 +173,14 @@ ${order.Status}
             } */
 
             if (action === 'WentForSparePart') {
+                newOrderMessageArr[1] = 'Отъехал за ЗЧ';
+
+                const editedOrderMessage = newOrderMessageArr.join('\n');
+
+                bot.editMessageText(editedOrderMessage, {
+                    chat_id: opt.chat_id,
+                    message_id: opt.message_id,
+                });
                 bot.editMessageReplyMarkup(ReturnToOrderOptions, opt);
                 this.userService.toggleStatus(String(masterId), 'wentForSparePart');
             }

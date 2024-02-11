@@ -98,4 +98,21 @@ export class OrderService {
 
         return orders;
     }
+
+    async toggleMessageId(orderId: string, messageId: string) {
+        const order = await this.getById(orderId);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                MessageId: messageId,
+            },
+        });
+    }
+
+    /* async getMessageId(orderId: string) {
+        const order = await this.getById(orderId);
+        return this.prisma.order.
+    } */
 }

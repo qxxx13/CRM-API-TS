@@ -51,8 +51,9 @@ enum OrderStatus {
   fulfilled // Успешно
   rejectedByClient // Отказ клиента
   rejectedByMaster // Отказ мастера
-  atWork // В 
+  atWork // В работе
   active //активная заявка
+  masterWentForSparePart // Мастер отъехал за зч
 }
 
 enum UserStatus {
