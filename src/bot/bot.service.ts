@@ -96,8 +96,11 @@ ${translate(order.Status)}
 
             this.orderService.toggleMessageId(String(order.Id), String(opt.message_id));
 
+            const orderMessageId = await this.orderService.getMessageId(String(order.Id));
+
+            bot.sendMessage(opt.chat_id, orderMessageId);
+
             if (action === 'Take') {
-                const orderMessageId = await this.orderService.getMessageId(String(order.Id));
                 this.orderService.toggleStatus(String(order.Id), 'active');
 
                 newOrderMessageArr[1] = 'Принята';
@@ -118,7 +121,6 @@ ${translate(order.Status)}
             }
 
             if (action === 'AtWork') {
-                const orderMessageId = await this.orderService.getMessageId(String(order.Id));
                 this.orderService.toggleStatus(String(order.Id), 'atWork');
                 this.userService.toggleStatus(String(masterId), 'atWork');
 
@@ -134,7 +136,6 @@ ${translate(order.Status)}
             }
 
             if (action === 'WentForSparePart') {
-                const orderMessageId = await this.orderService.getMessageId(String(order.Id));
                 newOrderMessageArr[1] = 'Отъехал за ЗЧ';
 
                 const editedOrderMessage = newOrderMessageArr.join('\n');
