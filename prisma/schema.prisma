@@ -30,6 +30,7 @@ model Order {
   Master            User        @relation(fields: [MasterId], references: [Id])
   MessageId         String?
   MasterSalary      Int         @default(0)
+  CompanyShare      Int @default(0)
 }
 
 model User {

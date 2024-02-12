@@ -176,7 +176,7 @@ ${translate(order.Status)}
         const editedOrderMessage = `#${orderId}
 Закрыта
 ——————
-К сдаче: ${order.MasterSalary}
+К сдаче: ${order.CompanyShare}
 
 Забрал: ${order.Total}
 Расход: ${order.Expenses}

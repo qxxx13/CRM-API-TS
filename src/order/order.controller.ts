@@ -48,6 +48,11 @@ export class OrderController {
         this.orderService.toggleExpenses(id, expenses);
     }
 
+    @Patch('companyShare')
+    async toggleCompanyShare(@Query('id') id: string, @Query('companyShare') companyShare: string) {
+        this.orderService.toggleCompanyShare(id, companyShare);
+    }
+
     @Patch('masterSalary')
     async toggleMasterSalary(@Query('id') id: string, @Query('price') price: string) {
         return this.orderService.toggleMasterSalary(id, price);

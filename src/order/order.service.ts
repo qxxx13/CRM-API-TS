@@ -108,6 +108,18 @@ export class OrderService {
         });
     }
 
+    async toggleCompanyShare(id: string, companyShare: string) {
+        const order = await this.getById(id);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                CompanyShare: +companyShare,
+            },
+        });
+    }
+
     async delete(id: string) {
         return await this.prisma.order.delete({ where: { Id: +id } });
     }
