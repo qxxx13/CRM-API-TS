@@ -180,6 +180,7 @@ ${translate(order.Status)}
 
 Забрал: ${order.Total}
 Расход: ${order.Expenses}
+Итог: ${order.Price}
 `;
 
         bot.editMessageText(editedOrderMessage, {
