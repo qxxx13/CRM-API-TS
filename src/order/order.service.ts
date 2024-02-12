@@ -115,4 +115,8 @@ export class OrderService {
         const order = await this.getById(orderId);
         return order.MessageId;
     }
+
+    async closeOrderMessage(orderId: string, masterId: string) {
+        this.botService.closeOrderMessage(+masterId, +orderId);
+    }
 }
