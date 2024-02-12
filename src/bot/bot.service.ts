@@ -177,6 +177,9 @@ ${translate(order.Status)}
 Закрыта
 ——————
 К сдаче: ${order.MasterSalary}
+
+Забрал: ${order.Total}
+Расход: ${order.Expenses}
 `;
 
         bot.editMessageText(editedOrderMessage, {
