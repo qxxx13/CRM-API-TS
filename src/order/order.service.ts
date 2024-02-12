@@ -117,6 +117,6 @@ export class OrderService {
     }
 
     async closeOrderMessage(orderId: number, masterId: number) {
-        this.botService.closeOrderMessage(masterId, orderId);
+        return this.botService.closeOrderMessage(masterId, orderId);
     }
 }

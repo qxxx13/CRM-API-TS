@@ -173,7 +173,7 @@ ${translate(order.Status)}
 
         const orderMessageId = await this.orderService.getMessageId(String(orderId));
 
-        const editedOrderMessage = `${orderId}
+        const editedOrderMessage = `#${orderId}
 Закрыта
 ——————`;
 
