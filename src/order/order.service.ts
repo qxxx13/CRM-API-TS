@@ -84,6 +84,30 @@ export class OrderService {
         });
     }
 
+    async toggleTotalPrice(id: string, totalPrice: string) {
+        const order = await this.getById(id);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                Total: +totalPrice,
+            },
+        });
+    }
+
+    async toggleExpenses(id: string, expenses: string) {
+        const order = await this.getById(id);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                Expenses: +expenses,
+            },
+        });
+    }
+
     async delete(id: string) {
         return await this.prisma.order.delete({ where: { Id: +id } });
     }

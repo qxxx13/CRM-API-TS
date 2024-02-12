@@ -38,6 +38,16 @@ export class OrderController {
         return this.orderService.togglePrice(id, price);
     }
 
+    @Patch('Total')
+    async toggleTotalPrice(@Query('id') id: string, @Query('totalPrice') totalPrice: string) {
+        this.orderService.toggleTotalPrice(id, totalPrice);
+    }
+
+    @Patch('Expenses')
+    async toggleExpenses(@Query('id') id: string, @Query('expenses') expenses: string) {
+        this.orderService.toggleExpenses(id, expenses);
+    }
+
     @Patch('masterSalary')
     async toggleMasterSalary(@Query('id') id: string, @Query('price') price: string) {
         return this.orderService.toggleMasterSalary(id, price);

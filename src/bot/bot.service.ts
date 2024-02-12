@@ -171,15 +171,17 @@ ${translate(order.Status)}
 
         const chatId = master.TelegramChatId;
 
-        const orderMessageId = await this.orderService.getMessageId(String(orderId));
+        const order = await this.orderService.getById(String(orderId));
 
         const editedOrderMessage = `#${orderId}
 Закрыта
-——————`;
+——————
+К сдаче: ${order.MasterSalary}
+`;
 
         bot.editMessageText(editedOrderMessage, {
             chat_id: chatId,
-            message_id: +orderMessageId,
+            message_id: +order.MessageId,
         });
     }
 }
