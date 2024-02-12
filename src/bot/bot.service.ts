@@ -163,4 +163,24 @@ ${translate(order.Status)}
             }
         });
     }
+
+    async closeOrderMessage(masterId: number, orderId: number) {
+        const bot = new TelegramBot(process.env.BOT_API_TOKEN, { polling: true });
+
+        const master = await this.userService.getById(masterId);
+
+        const chatId = master.TelegramChatId;
+        //const messageThreadId = master.MessageId;
+
+        const orderMessageId = await this.orderService.getMessageId(String(orderId));
+
+        const editedOrderMessage = `${orderId}
+Закрыта
+——————`;
+
+        bot.editMessageText(editedOrderMessage, {
+            chat_id: chatId,
+            message_id: +orderMessageId,
+        });
+    }
 }
