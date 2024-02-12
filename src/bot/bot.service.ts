@@ -170,9 +170,6 @@ ${translate(order.Status)}
         const master = await this.userService.getById(masterId);
 
         const chatId = master.TelegramChatId;
-        //const messageThreadId = master.MessageId;
-
-        console.log(`bot.service orderid=${orderId}`);
 
         const orderMessageId = await this.orderService.getMessageId(String(orderId));
 

@@ -55,7 +55,7 @@ export class OrderController {
     }
 
     @Get('closeOrderMessage')
-    async closeOrderMessage(@Query('orderId') orderId: string, @Query('masterId') masterId: string) {
+    async closeOrderMessage(@Query('orderId') orderId: number, @Query('masterId') masterId: number) {
         return this.orderService.closeOrderMessage(orderId, masterId);
     }
 }

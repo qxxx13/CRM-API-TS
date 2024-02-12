@@ -116,10 +116,7 @@ export class OrderService {
         return order.MessageId;
     }
 
-    async closeOrderMessage(orderId: string, masterId: string) {
-        console.log(orderId, masterId);
-
-        console.log(typeof orderId);
-        this.botService.closeOrderMessage(+masterId, +orderId);
+    async closeOrderMessage(orderId: number, masterId: number) {
+        this.botService.closeOrderMessage(masterId, orderId);
     }
 }
