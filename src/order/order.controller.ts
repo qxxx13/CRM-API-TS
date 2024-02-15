@@ -48,6 +48,11 @@ export class OrderController {
         this.orderService.toggleExpenses(id, expenses);
     }
 
+    @Patch('closingOrderId')
+    async toggleClosingOrderId(@Query('id') id: string, @Query('closingOrderId') closingOrderId: string) {
+        this.orderService.toggleClosingOrderId(id, closingOrderId);
+    }
+
     @Patch('companyShare')
     async toggleCompanyShare(@Query('id') id: string, @Query('companyShare') companyShare: string) {
         this.orderService.toggleCompanyShare(id, companyShare);
