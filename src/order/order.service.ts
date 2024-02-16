@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma.service';
 import { createPaginator } from 'prisma-pagination';
 import { OrderDto } from './order.dto';
 import { BotService } from 'src/bot/bot.service';
+import { CloseOrderDataType } from 'src/common/types';
 
 @Injectable()
 export class OrderService {
@@ -60,53 +61,24 @@ export class OrderService {
         });
     }
 
-    async togglePrice(id: string, price: string) {
+    async closeOrder(id: string, closeData: CloseOrderDataType) {
         const order = await this.getById(id);
         return this.prisma.order.update({
             where: {
                 Id: order.Id,
             },
             data: {
-                Price: price,
+                Total: +closeData.TotalPrice,
+                Price: closeData.Price,
+                MasterSalary: +closeData.MasterSalary,
+                Expenses: +closeData.Expenses,
+                CompanyShare: +closeData.CompanyShare,
+                Comments: closeData.Comments,
             },
         });
     }
 
-    async toggleMasterSalary(id: string, salary: string) {
-        const order = await this.getById(id);
-        return this.prisma.order.update({
-            where: {
-                Id: order.Id,
-            },
-            data: {
-                MasterSalary: +salary,
-            },
-        });
-    }
-
-    async toggleTotalPrice(id: string, totalPrice: string) {
-        const order = await this.getById(id);
-        return this.prisma.order.update({
-            where: {
-                Id: order.Id,
-            },
-            data: {
-                Total: +totalPrice,
-            },
-        });
-    }
-
-    async toggleExpenses(id: string, expenses: string) {
-        const order = await this.getById(id);
-        return this.prisma.order.update({
-            where: {
-                Id: order.Id,
-            },
-            data: {
-                Expenses: +expenses,
-            },
-        });
-    }
+    /* 
 
     async toggleClosingOrderId(id: string, closingOrderId: string) {
         const order = await this.getById(id);
@@ -119,18 +91,7 @@ export class OrderService {
             },
         });
     }
-
-    async toggleCompanyShare(id: string, companyShare: string) {
-        const order = await this.getById(id);
-        return this.prisma.order.update({
-            where: {
-                Id: order.Id,
-            },
-            data: {
-                CompanyShare: +companyShare,
-            },
-        });
-    }
+ */
 
     async delete(id: string) {
         return await this.prisma.order.delete({ where: { Id: +id } });
@@ -165,6 +126,6 @@ export class OrderService {
     }
 
     async closeOrderMessage(orderId: number, masterId: number) {
-        return this.botService.closeOrderMessage(masterId, orderId);
+        return await this.botService.closeOrderMessage(masterId, orderId);
     }
 }
