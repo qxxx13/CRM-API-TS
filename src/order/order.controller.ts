@@ -38,6 +38,26 @@ export class OrderController {
         return this.orderService.togglePrice(id, price);
     }
 
+    @Patch('total')
+    async toggleTotalPrice(@Query('id') id: string, @Query('totalPrice') totalPrice: string) {
+        this.orderService.toggleTotalPrice(id, totalPrice);
+    }
+
+    @Patch('expenses')
+    async toggleExpenses(@Query('id') id: string, @Query('expenses') expenses: string) {
+        this.orderService.toggleExpenses(id, expenses);
+    }
+
+    @Patch('closingOrderId')
+    async toggleClosingOrderId(@Query('id') id: string, @Query('closingOrderId') closingOrderId: string) {
+        this.orderService.toggleClosingOrderId(id, closingOrderId);
+    }
+
+    @Patch('companyShare')
+    async toggleCompanyShare(@Query('id') id: string, @Query('companyShare') companyShare: string) {
+        this.orderService.toggleCompanyShare(id, companyShare);
+    }
+
     @Patch('masterSalary')
     async toggleMasterSalary(@Query('id') id: string, @Query('price') price: string) {
         return this.orderService.toggleMasterSalary(id, price);
@@ -52,5 +72,10 @@ export class OrderController {
     @Delete(':id')
     async deleteOrder(@Param('id') id: string) {
         return this.orderService.delete(id);
+    }
+
+    @Patch('closeOrderMessage')
+    async closeOrderMessage(@Query('orderId') orderId: string, @Query('masterId') masterId: string) {
+        return this.orderService.closeOrderMessage(+orderId, +masterId);
     }
 }

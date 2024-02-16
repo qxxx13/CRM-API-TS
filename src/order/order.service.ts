@@ -84,6 +84,54 @@ export class OrderService {
         });
     }
 
+    async toggleTotalPrice(id: string, totalPrice: string) {
+        const order = await this.getById(id);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                Total: +totalPrice,
+            },
+        });
+    }
+
+    async toggleExpenses(id: string, expenses: string) {
+        const order = await this.getById(id);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                Expenses: +expenses,
+            },
+        });
+    }
+
+    async toggleClosingOrderId(id: string, closingOrderId: string) {
+        const order = await this.getById(id);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                ClosingOrderId: +closingOrderId,
+            },
+        });
+    }
+
+    async toggleCompanyShare(id: string, companyShare: string) {
+        const order = await this.getById(id);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                CompanyShare: +companyShare,
+            },
+        });
+    }
+
     async delete(id: string) {
         return await this.prisma.order.delete({ where: { Id: +id } });
     }
@@ -97,5 +145,26 @@ export class OrderService {
         });
 
         return orders;
+    }
+
+    async toggleMessageId(orderId: string, messageId: string) {
+        const order = await this.getById(orderId);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                MessageId: messageId,
+            },
+        });
+    }
+
+    async getMessageId(orderId: string) {
+        const order = await this.getById(orderId);
+        return order.MessageId;
+    }
+
+    async closeOrderMessage(orderId: number, masterId: number) {
+        return this.botService.closeOrderMessage(masterId, orderId);
     }
 }

@@ -30,6 +30,8 @@ model Order {
   Master            User        @relation(fields: [MasterId], references: [Id])
   MessageId         String?
   MasterSalary      Int         @default(0)
+  CompanyShare      Int         @default(0)
+  ClosingOrderId    Int?
 }
 
 model User {
@@ -49,8 +51,12 @@ model User {
 enum OrderStatus {
   pending // Ожидает
   fulfilled // Успешно
-  rejected // Отказ
+  rejectedByClient // Отказ клиента
+  rejectedByMaster // Отказ мастера
   atWork // В работе
+  active //активная заявка
+  masterWentForSparePart // Мастер отъехал за зч
+  awaitingPayment // ожидает оплаты
 }
 
 enum UserStatus {
