@@ -1,6 +1,7 @@
 import { Controller, Get, Post, UsePipes, ValidationPipe, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Order, OrderStatus } from '@prisma/client';
+import { CloseOrderDataType } from 'src/common/types';
 
 @Controller('orders')
 export class OrderController {
@@ -32,35 +33,9 @@ export class OrderController {
         return this.orderService.toggleStatus(id, status);
     }
 
-    @Patch('price')
-    async togglePrice(@Query('id') id: string, @Query('price') price: string) {
-        this.orderService.toggleStatus(id, 'fulfilled');
-        return this.orderService.togglePrice(id, price);
-    }
-
-    @Patch('total')
-    async toggleTotalPrice(@Query('id') id: string, @Query('totalPrice') totalPrice: string) {
-        this.orderService.toggleTotalPrice(id, totalPrice);
-    }
-
-    @Patch('expenses')
-    async toggleExpenses(@Query('id') id: string, @Query('expenses') expenses: string) {
-        this.orderService.toggleExpenses(id, expenses);
-    }
-
-    @Patch('closingOrderId')
-    async toggleClosingOrderId(@Query('id') id: string, @Query('closingOrderId') closingOrderId: string) {
-        this.orderService.toggleClosingOrderId(id, closingOrderId);
-    }
-
-    @Patch('companyShare')
-    async toggleCompanyShare(@Query('id') id: string, @Query('companyShare') companyShare: string) {
-        this.orderService.toggleCompanyShare(id, companyShare);
-    }
-
-    @Patch('masterSalary')
-    async toggleMasterSalary(@Query('id') id: string, @Query('price') price: string) {
-        return this.orderService.toggleMasterSalary(id, price);
+    @Patch('closeOrder/:id')
+    async toggleCloseOrder(@Param('id') id: string, @Body() closeData: CloseOrderDataType) {
+        return this.orderService.closeOrder(id, closeData);
     }
 
     @Get('masterId/:id')
