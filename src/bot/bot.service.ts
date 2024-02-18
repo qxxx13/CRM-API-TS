@@ -175,13 +175,15 @@ ${translate(order.Status)}
 
         const editedOrderMessage = `#${orderId}
 Закрыта
+
+Номер КЛ: ${order.ClientPhoneNumber}
+Адрес: ${order.Address}
 ——————
 К сдаче: ${order.CompanyShare}
 
 Забрал: ${order.Total}
 Расход: ${order.Expenses}
-Итог: ${order.Price}
-`;
+Итог: ${order.Price}`;
 
         bot.editMessageText(editedOrderMessage, {
             chat_id: chatId,
