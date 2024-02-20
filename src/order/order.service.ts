@@ -1,17 +1,14 @@
-import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Order, OrderStatus, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { createPaginator } from 'prisma-pagination';
 import { OrderDto } from './order.dto';
-import { BotService } from 'src/bot/bot.service';
 import { CloseOrderDataType } from 'src/common/types';
+import axios from 'axios';
 
 @Injectable()
 export class OrderService {
-    constructor(
-        @Inject(forwardRef(() => BotService)) private readonly botService: BotService,
-        private prisma: PrismaService,
-    ) {}
+    constructor(private prisma: PrismaService) {}
 
     async getById(id: string) {
         const order = await this.prisma.order.findUnique({ where: { Id: +id } });
@@ -45,7 +42,7 @@ export class OrderService {
         const newOrder = await this.prisma.order.create({
             data: dto,
         });
-        await this.botService.botMessage(dto.MasterId, newOrder);
+        await axios.post('http://localhost:5555/api/bot/create', newOrder).then((res) => res.data);
         return newOrder;
     }
 
@@ -78,21 +75,6 @@ export class OrderService {
         });
     }
 
-    /* 
-
-    async toggleClosingOrderId(id: string, closingOrderId: string) {
-        const order = await this.getById(id);
-        return this.prisma.order.update({
-            where: {
-                Id: order.Id,
-            },
-            data: {
-                ClosingOrderId: +closingOrderId,
-            },
-        });
-    }
- */
-
     async delete(id: string) {
         return await this.prisma.order.delete({ where: { Id: +id } });
     }
@@ -120,12 +102,20 @@ export class OrderService {
         });
     }
 
+    async toggleOrderMessage(orderId: string, botMessage: string) {
+        const order = await this.getById(orderId);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                BotMessage: botMessage,
+            },
+        });
+    }
+
     async getMessageId(orderId: string) {
         const order = await this.getById(orderId);
         return order.MessageId;
-    }
-
-    async closeOrderMessage(orderId: number, masterId: number) {
-        return await this.botService.closeOrderMessage(masterId, orderId);
     }
 }

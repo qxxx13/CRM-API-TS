@@ -49,8 +49,13 @@ export class OrderController {
         return this.orderService.delete(id);
     }
 
-    @Patch('closeOrderMessage')
-    async closeOrderMessage(@Query('orderId') orderId: string, @Query('masterId') masterId: string) {
-        return this.orderService.closeOrderMessage(+orderId, +masterId);
+    @Patch('messageId')
+    async toggleMessageId(@Query('orderId') orderId: string, @Query('messageId') messageId: string) {
+        return this.orderService.toggleMessageId(orderId, messageId);
+    }
+
+    @Patch('orderMessage')
+    async toggleOrderMessageArr(@Query('orderId') orderId: string, @Query('orderMessage') orderMessage: string) {
+        return this.orderService.toggleOrderMessage(orderId, orderMessage);
     }
 }

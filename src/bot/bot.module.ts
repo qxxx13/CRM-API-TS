@@ -1,10 +1,9 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { BotService } from './bot.service';
-import { OrderModule } from 'src/order/order.module';
-import { UserModule } from 'src/user/user.module';
+import { BotController } from './bot.controller';
 
 @Module({
-    imports: [forwardRef(() => UserModule), forwardRef(() => OrderModule)],
+    controllers: [BotController],
     providers: [BotService],
     exports: [BotService],
 })

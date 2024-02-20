@@ -1,25 +1,142 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { Order } from '@prisma/client';
-import { UserService } from 'src/user/user.service';
+import { Injectable } from '@nestjs/common';
+import { Order, User } from '@prisma/client';
 import * as TelegramBot from 'node-telegram-bot-api';
 import * as moment from 'moment';
-import { OrderService } from 'src/order/order.service';
 import { translate } from 'src/common/translate';
+import axios from 'axios';
 
 @Injectable()
 export class BotService {
-    constructor(
-        @Inject(forwardRef(() => OrderService)) private readonly orderService: OrderService,
-        @Inject(UserService) private readonly userService: UserService,
-    ) {}
+    constructor() {}
 
-    async botMessage(masterId: number, order: Order) {
+    bot = new TelegramBot(process.env.BOT_API_TOKEN, { polling: true });
+
+    async createOrderBotMessage(order: Order) {
+        const master: User = await axios
+            .get(`http://77.91.84.85:5555/api/user/${order.MasterId}`)
+            .then((res) => res.data);
+
+        const chatId = master.TelegramChatId;
+        const messageThreadId = master.MessageThreadId;
+
+        const orderDate = moment(order.Date).format('DD.MM.YY');
+
+        const orderClientPhoneNumber = order.ClientPhoneNumber.replaceAll('-', '');
+
+        const newOrderMessage = `#${order.Id}
+${translate(order.Status)}
+——————
+Дата: ${orderDate}
+Время: ${order.Time}
+Номер: ${orderClientPhoneNumber}
+Адрес: ${order.Address}
+Визит: ${translate(order.Visit)}
+Клиент: ${order.ClientName}
+Имя мастера: ${order.MasterName}
+Озвучка: ${order.AnnouncedPrice}
+Описание: ${order.Description}`;
+
+        let msgId: number;
+
+        await this.bot
+            .sendMessage(+chatId, newOrderMessage, { message_thread_id: +messageThreadId })
+            .then(
+                async (msg: TelegramBot.Message) => (msgId = msg.message_id),
+                await axios
+                    .patch(`http://77.91.84.85:5555/api/orders/messageId?orderId=${order.Id}&messageId=${msgId}`)
+                    .then((res) => res.data),
+            )
+            .catch((error) => console.log(error));
+
+        const takeOrderOptions = {
+            inline_keyboard: [[{ text: 'Прием/отказ', url: `http://77.91.84.85/take/${chatId}/${msgId}/${order.Id}` }]],
+        };
+
+        await this.bot.editMessageText(newOrderMessage, {
+            chat_id: chatId,
+            message_id: msgId,
+            reply_markup: takeOrderOptions,
+        });
+    }
+
+    async takeOrderBotMessage(chatId: string, messageId: string, orderId: string) {
+        const OrderOptions = {
+            inline_keyboard: [[{ text: 'В работе', url: `http://77.91.84.85/work/${chatId}/${messageId}/${orderId}` }]],
+        };
+
+        const order: Order = await axios.get(`http://77.91.84.85:5555/api/orders/${orderId}`).then((res) => res.data);
+        const newMessage = `#${order.Id}
+Принята
+——————
+Дата: ${moment(order.Date).format('DD.MM.YY')}
+Время: ${order.Time}
+Номер: ${order.ClientPhoneNumber.replaceAll('-', '')}
+Адрес: ${order.Address}
+Визит: ${translate(order.Visit)}
+Клиент: ${order.ClientName}
+Имя мастера: ${order.MasterName}
+Озвучка: ${order.AnnouncedPrice}
+Описание: ${order.Description}`;
+
+        this.bot.editMessageText(newMessage, {
+            chat_id: chatId,
+            message_id: +messageId,
+            reply_markup: OrderOptions,
+        });
+    }
+
+    async atWorkOrderBotMessage(chatId: string, messageId: string, orderId: string) {
+        const OrderOptions = {
+            inline_keyboard: [[{ text: 'В работе', url: `http://77.91.84.85/work/${chatId}/${messageId}/${orderId}` }]],
+        };
+
+        const order: Order = await axios.get(`http://77.91.84.85:5555/api/orders/${orderId}`).then((res) => res.data);
+        const newMessage = `#${order.Id}
+В работе
+——————
+Дата: ${moment(order.Date).format('DD.MM.YY')}
+Время: ${order.Time}
+Номер: ${order.ClientPhoneNumber.replaceAll('-', '')}
+Адрес: ${order.Address}
+Визит: ${translate(order.Visit)}
+Клиент: ${order.ClientName}
+Имя мастера: ${order.MasterName}
+Озвучка: ${order.AnnouncedPrice}
+Описание: ${order.Description}`;
+
+        this.bot.editMessageText(newMessage, {
+            chat_id: chatId,
+            message_id: +messageId,
+            reply_markup: OrderOptions,
+        });
+    }
+
+    async closeOrderBotMessage(chatId: string, messageId: string, orderId: string) {
+        const order: Order = await axios.get(`http://77.91.84.85:5555/api/orders/${orderId}`).then((res) => res.data);
+        const newMessage = `#${order.Id}
+Закрыта
+
+Номер: ${order.ClientPhoneNumber.replaceAll('-', '')}
+Адрес: ${order.Address}
+——————
+К сдаче: ${order.CompanyShare}
+
+Забрал: ${order.Total}
+Расход: ${order.Expenses}
+Итог: ${order.Price}`;
+
+        this.bot.editMessageText(newMessage, {
+            chat_id: chatId,
+            message_id: +messageId,
+        });
+    }
+    /* async createOrderBotMessage(masterId: number, order: Order) {
         const bot = new TelegramBot(process.env.BOT_API_TOKEN, { polling: true });
 
-        const master = this.userService.getById(masterId);
+        const master = await this.userService.getById(masterId);
 
-        const chatId = (await master).TelegramChatId;
-        const messageId = (await master).MessageId;
+        const chatId = master.TelegramChatId;
+        const messageId = master.MessageId;
 
         const orderDate = moment(order.Date).format('DD.MM.YY');
 
@@ -82,7 +199,14 @@ ${translate(order.Status)}
             inline_keyboard: [[{ text: 'Вернулся', callback_data: 'ReturnToOrder' }]],
         };
 
-        bot.sendMessage(+chatId, newOrderMessage, takeOrderOptions).catch((error) => console.log(error));
+        await bot
+            .sendMessage(+chatId, newOrderMessage, takeOrderOptions)
+            .catch((error) => console.log(error))
+            .then(
+                async (msg: TelegramBot.Message) =>
+                    await this.orderService.toggleMessageId(String(order.Id), String(msg.message_id)),
+            );
+
         //bot.sendMessage(-1002048995957, newOrderMessage, { message_thread_id: 4 }).catch((error) => console.log(error));
 
         bot.on('callback_query', async (callbackQuery) => {
@@ -93,18 +217,17 @@ ${translate(order.Status)}
                 message_id: msg.message_id,
                 message_thread_id: msg.message_thread_id,
             };
-            await this.orderService.toggleMessageId(String(order.Id), String(opt.message_id));
 
             const orderMessageId = await this.orderService.getMessageId(String(order.Id));
 
             if (action === 'Take') {
-                this.orderService.toggleStatus(String(order.Id), 'active');
+                await this.orderService.toggleStatus(String(order.Id), 'active');
 
                 newOrderMessageArr[1] = 'Принята';
 
                 const editedOrderMessage = newOrderMessageArr.join('\n');
 
-                bot.editMessageText(editedOrderMessage, {
+                await bot.editMessageText(editedOrderMessage, {
                     chat_id: opt.chat_id,
                     message_id: +orderMessageId,
                     reply_markup: OrderOptions,
@@ -112,20 +235,20 @@ ${translate(order.Status)}
             }
 
             if (action === 'Reject') {
-                this.orderService.toggleStatus(String(order.Id), 'rejectedByMaster');
-                bot.sendMessage(opt.chat_id, 'Отменил заявку', { message_thread_id: opt.message_thread_id });
-                bot.deleteMessage(opt.chat_id, opt.message_id);
+                await this.orderService.toggleStatus(String(order.Id), 'rejectedByMaster');
+                await bot.sendMessage(opt.chat_id, 'Отменил заявку', { message_thread_id: opt.message_thread_id });
+                await bot.deleteMessage(opt.chat_id, opt.message_id);
             }
 
             if (action === 'AtWork') {
-                this.orderService.toggleStatus(String(order.Id), 'atWork');
-                this.userService.toggleStatus(String(masterId), 'atWork');
+                await this.orderService.toggleStatus(String(order.Id), 'atWork');
+                await this.userService.toggleStatus(String(masterId), 'atWork');
 
                 newOrderMessageArr[1] = 'В работе';
 
                 const editedOrderMessage = newOrderMessageArr.join('\n');
 
-                bot.editMessageText(editedOrderMessage, {
+                await bot.editMessageText(editedOrderMessage, {
                     chat_id: opt.chat_id,
                     message_id: +orderMessageId,
                     reply_markup: atWorkOrderOptions,
@@ -133,33 +256,32 @@ ${translate(order.Status)}
             }
 
             if (action === 'WentForSparePart') {
+                await this.userService.toggleStatus(String(masterId), 'wentForSparePart');
+                await this.orderService.toggleStatus(String(order.Id), 'masterWentForSparePart');
                 newOrderMessageArr[1] = 'Отъехал за ЗЧ';
 
                 const editedOrderMessage = newOrderMessageArr.join('\n');
 
-                bot.editMessageText(editedOrderMessage, {
+                await bot.editMessageText(editedOrderMessage, {
                     chat_id: opt.chat_id,
                     message_id: +orderMessageId,
                     reply_markup: ReturnToOrderOptions,
                 });
-
-                this.userService.toggleStatus(String(masterId), 'wentForSparePart');
-                this.orderService.toggleStatus(String(order.Id), 'masterWentForSparePart');
             }
 
             if (action === 'ReturnToOrder') {
+                await this.userService.toggleStatus(String(masterId), 'atWork');
+                await this.orderService.toggleStatus(String(order.Id), 'atWork');
+
                 newOrderMessageArr[1] = 'В работе';
 
                 const editedOrderMessage = newOrderMessageArr.join('\n');
 
-                bot.editMessageText(editedOrderMessage, {
+                await bot.editMessageText(editedOrderMessage, {
                     chat_id: opt.chat_id,
                     message_id: +orderMessageId,
                     reply_markup: atWorkOrderOptions,
                 });
-
-                this.userService.toggleStatus(String(masterId), 'atWork');
-                this.orderService.toggleStatus(String(order.Id), 'atWork');
             }
         });
     }
@@ -189,5 +311,5 @@ ${translate(order.Status)}
             chat_id: chatId,
             message_id: +order.MessageId,
         });
-    }
+    } */
 }

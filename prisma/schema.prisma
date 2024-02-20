@@ -31,21 +31,22 @@ model Order {
   MessageId         String?
   MasterSalary      Int         @default(0)
   CompanyShare      Int         @default(0)
-  ClosingOrderId    Int?
+  ClosingOrderId    Int?        @default(0)
+  BotMessage        String      @default("") @db.VarChar(500)
 }
 
 model User {
-  Id             Int        @id @default(autoincrement())
-  UserName       String
-  Password       String
-  TelegramChatId String
-  MessageId      String
-  Role           Role       @default(master)
-  IsOnline       Boolean    @default(false)
-  InterestRate   Int        @default(50) // Процентная ставка
-  Status         UserStatus @default(atWork)
-  Salary         Int        @default(0)
-  Order          Order[]
+  Id              Int        @id @default(autoincrement())
+  UserName        String
+  Password        String
+  TelegramChatId  String
+  MessageThreadId String
+  Role            Role       @default(master)
+  IsOnline        Boolean    @default(false)
+  InterestRate    Int        @default(50) // Процентная ставка
+  Status          UserStatus @default(atWork)
+  Salary          Int        @default(0)
+  Order           Order[]
 }
 
 enum OrderStatus {
