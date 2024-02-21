@@ -82,9 +82,12 @@ export class BotService {
             inline_keyboard: [[{ text: 'Вернулся', url: `http://77.91.84.85/went/${chatId}/${messageId}/${orderId}` }]],
         };
 
-        this.bot.editMessageReplyMarkup(OrderOptions, {
+        const order: Order = await axios.get(`http://77.91.84.85:5555/api/orders/${orderId}`).then((res) => res.data);
+
+        this.bot.editMessageText(newOrderMessage(order), {
             chat_id: chatId,
             message_id: +messageId,
+            reply_markup: OrderOptions,
         });
     }
 
