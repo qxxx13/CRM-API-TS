@@ -1,5 +1,5 @@
 import { Order } from '@prisma/client';
-import moment from 'moment';
+import * as moment from 'moment';
 import { translate } from 'src/common/translate';
 
 export const newOrderMessage = (order: Order) => {
