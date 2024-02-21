@@ -37,4 +37,22 @@ export class BotController {
     ) {
         this.botService.closeOrderBotMessage(chatId, messageId, orderId);
     }
+
+    @Patch('/went')
+    async toggleOrderMessageWent(
+        @Query('chatId') chatId: string,
+        @Query('messageId') messageId: string,
+        @Query('orderId') orderId: string,
+    ) {
+        this.botService.wentForSpareOrderBotMessage(chatId, messageId, orderId);
+    }
+
+    @Patch('/rejectMaster')
+    async toggleOrderMessageRejectByMaster(
+        @Query('chatId') chatId: string,
+        @Query('messageId') messageId: string,
+        @Query('orderId') orderId: string,
+    ) {
+        this.botService.rejectByMasterOrderBotMessage(chatId, messageId, orderId);
+    }
 }

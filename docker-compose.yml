@@ -27,8 +27,8 @@ services:
     container_name: pgadmin4
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: redecv8@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: rooot282
+      PGADMIN_DEFAULT_EMAIL: dirrnd@hype.rnd
+      PGADMIN_DEFAULT_PASSWORD: superuser228
     ports:
       - "5050:80"
     volumes:
