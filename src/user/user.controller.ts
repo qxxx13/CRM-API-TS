@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from '@prisma/client';
+import { User, UserStatus } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
@@ -30,5 +30,10 @@ export class UserController {
     @Get('interest/:id')
     async getUserInterestRate(@Param('id') id: string) {
         return this.userService.getInterestRateById(id);
+    }
+
+    @Patch('status')
+    async toggleUserStatus(@Query('id') userId: string, @Query('status') status: UserStatus) {
+        return this.userService.toggleStatus(userId, status);
     }
 }
