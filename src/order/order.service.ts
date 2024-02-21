@@ -42,7 +42,7 @@ export class OrderService {
         const newOrder = await this.prisma.order.create({
             data: dto,
         });
-        await axios.post('http://localhost:5555/api/bot/create', newOrder).then((res) => res.data);
+        await axios.post('http://77.91.84.85:5555/api/bot/create', newOrder).then((res) => res.data);
         return newOrder;
     }
 
