@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma.service';
 import { createPaginator } from 'prisma-pagination';
 import { OrderDto } from './order.dto';
 import { CloseOrderDataType } from 'src/common/types';
-import axios from 'axios';
+import { serverInstance } from 'src/bot/common/instances';
 
 @Injectable()
 export class OrderService {
@@ -42,7 +42,7 @@ export class OrderService {
         const newOrder = await this.prisma.order.create({
             data: dto,
         });
-        await axios.post('http://77.91.84.85:5555/api/bot/create', newOrder).then((res) => res.data);
+        await serverInstance.post('bot/create', newOrder);
         return newOrder;
     }
 

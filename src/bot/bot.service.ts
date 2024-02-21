@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Order, User } from '@prisma/client';
 import * as TelegramBot from 'node-telegram-bot-api';
-import axios from 'axios';
 import { newOrderMessage } from './common/OrderMessage';
+import { serverInstance, clientInstance } from './common/instances';
 
 @Injectable()
 export class BotService {
@@ -11,9 +11,9 @@ export class BotService {
     bot = new TelegramBot(process.env.BOT_API_TOKEN, { polling: true });
 
     async createOrderBotMessage(order: Order) {
-        const master: User = await axios
-            .get(`http://77.91.84.85:5555/api/user/${order.MasterId}`)
-            .then((res) => res.data);
+        const master: User = (await serverInstance
+            .get(`user/${order.MasterId}`)
+            .then((res) => res.data)) as unknown as User;
 
         const chatId = master.TelegramChatId;
         const messageThreadId = master.MessageThreadId;
@@ -23,15 +23,15 @@ export class BotService {
         await this.bot
             .sendMessage(+chatId, 'Новая заявка', { message_thread_id: +messageThreadId })
             .then(
-                async (msg: TelegramBot.Message) => (msgId = msg.message_id),
-                await axios
-                    .patch(`http://77.91.84.85:5555/api/orders/messageId?orderId=${order.Id}&messageId=${msgId}`)
+                async (msg: TelegramBot.Message) => await (msgId = msg.message_id),
+                await serverInstance
+                    .patch(`orders/messageId?orderId=${order.Id}&messageId=${msgId}`)
                     .then((res) => res.data),
             )
             .catch((error) => console.log(error));
 
         const takeOrderOptions = {
-            inline_keyboard: [[{ text: 'Прием/отказ', url: `http://77.91.84.85/take/${chatId}/${msgId}/${order.Id}` }]],
+            inline_keyboard: [[{ text: 'Прием/отказ', url: `${clientInstance}/take/${chatId}/${msgId}/${order.Id}` }]],
         };
 
         await this.bot.editMessageText('Новая заявка', {
@@ -42,13 +42,13 @@ export class BotService {
     }
 
     async takeOrderBotMessage(chatId: string, messageId: string, orderId: string) {
-        await axios.patch(`http://77.91.84.85:5555/api/orders/status?id=${orderId}&status=active`);
+        await serverInstance.patch(`orders/status?id=${orderId}&status=active`);
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'В работе', url: `http://77.91.84.85/work/${chatId}/${messageId}/${orderId}` }]],
+            inline_keyboard: [[{ text: 'В работе', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }]],
         };
 
-        const order: Order = await axios.get(`http://77.91.84.85:5555/api/orders/${orderId}`).then((res) => res.data);
+        const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
 
         this.bot.editMessageText(newOrderMessage(order), {
             chat_id: chatId,
@@ -58,15 +58,15 @@ export class BotService {
     }
 
     async atWorkOrderBotMessage(chatId: string, messageId: string, orderId: string) {
-        await axios.patch(`http://77.91.84.85:5555/api/orders/status?id=${orderId}&status=atWork`);
+        await serverInstance.patch(`orders/status?id=${orderId}&status=atWork`);
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'В работе', url: `http://77.91.84.85/work/${chatId}/${messageId}/${orderId}` }]],
+            inline_keyboard: [[{ text: 'В работе', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }]],
         };
 
-        const order: Order = await axios.get(`http://77.91.84.85:5555/api/orders/${orderId}`).then((res) => res.data);
+        const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
 
-        await axios.patch(`http://77.91.84.85:5555/api/user/status?id=${order.MasterId}&status=atWork`);
+        await serverInstance.patch(`user/status?id=${order.MasterId}&status=atWork`);
 
         this.bot.editMessageText(newOrderMessage(order), {
             chat_id: chatId,
@@ -76,13 +76,13 @@ export class BotService {
     }
 
     async wentForSpareOrderBotMessage(chatId: string, messageId: string, orderId: string) {
-        await axios.patch(`http://77.91.84.85:5555/api/orders/status?id=${orderId}&status=masterWentForSparePart`);
+        await serverInstance.patch(`orders/status?id=${orderId}&status=masterWentForSparePart`);
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'Вернулся', url: `http://77.91.84.85/went/${chatId}/${messageId}/${orderId}` }]],
+            inline_keyboard: [[{ text: 'Вернулся', url: `${clientInstance}/went/${chatId}/${messageId}/${orderId}` }]],
         };
 
-        const order: Order = await axios.get(`http://77.91.84.85:5555/api/orders/${orderId}`).then((res) => res.data);
+        const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
 
         this.bot.editMessageText(newOrderMessage(order), {
             chat_id: chatId,
@@ -92,7 +92,7 @@ export class BotService {
     }
 
     async closeOrderBotMessage(chatId: string, messageId: string, orderId: string) {
-        const order: Order = await axios.get(`http://77.91.84.85:5555/api/orders/${orderId}`).then((res) => res.data);
+        const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
         const newMessage = `#${order.Id}
 Закрыта
 
@@ -112,7 +112,7 @@ export class BotService {
     }
 
     async rejectByMasterOrderBotMessage(chatId: string, messageId: string, orderId: string) {
-        await axios.patch(`http://77.91.84.85:5555/api/orders/status?id=${orderId}&status=rejectedByMaster`);
+        await serverInstance.patch(`orders/status?id=${orderId}&status=rejectedByMaster`);
 
         this.bot.editMessageText('Заявка отклонена мастером', {
             chat_id: chatId,
@@ -121,7 +121,7 @@ export class BotService {
     }
 
     async rejectByClientOrderBotMessage(chatId: string, messageId: string, orderId: string) {
-        await axios.patch(`http://77.91.84.85:5555/api/orders/status?id=${orderId}&status=rejectedByClient`);
+        await serverInstance.patch(`orders/status?id=${orderId}&status=rejectedByClient`);
 
         this.bot.editMessageText('Заявка отклонена клиентом', {
             chat_id: chatId,
