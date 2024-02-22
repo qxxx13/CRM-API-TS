@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Order, OrderStatus, Prisma } from '@prisma/client';
+import { IsWorkingOrder, Order, OrderStatus, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { createPaginator } from 'prisma-pagination';
 import { OrderDto } from './order.dto';
@@ -17,18 +17,50 @@ export class OrderService {
         } else return order;
     }
 
-    async getAll(page: number, perPage: number, status: OrderStatus | 'all', searchValue: string) {
+    async getAll(
+        page: number,
+        perPage: number,
+        status: OrderStatus | 'all',
+        searchValue: string,
+        masterId: string | 'all',
+        isWorking: IsWorkingOrder | 'all',
+    ) {
         const paginate = createPaginator({ perPage });
 
         const searchByStatus = status !== 'all' ? status : {};
         const search = searchValue !== '' ? searchValue : {};
+        const searchByMasterId = masterId !== 'all' ? +masterId : {};
+        const searchByIsWorking = isWorking !== 'all' ? isWorking : {};
 
         const orders = paginate<OrderDto, Prisma.OrderFindManyArgs>(
             this.prisma.order,
             {
                 where: {
+                    MasterId: searchByMasterId,
                     Status: searchByStatus,
                     ClientPhoneNumber: search,
+                    IsWorking: searchByIsWorking,
+                },
+                orderBy: { Id: 'desc' },
+            },
+            { page: page },
+        );
+
+        return await orders;
+    }
+
+    async getAllByUserId(page: number, perPage: number, status: OrderStatus | 'all', userId: string) {
+        const paginate = createPaginator({ perPage });
+
+        const searchByStatus = status !== 'all' ? status : {};
+        const searchByMasterId = userId !== 'all' ? +userId : {};
+
+        const orders = paginate<OrderDto, Prisma.OrderFindManyArgs>(
+            this.prisma.order,
+            {
+                where: {
+                    MasterId: searchByMasterId,
+                    Status: searchByStatus,
                 },
                 orderBy: { Id: 'desc' },
             },
@@ -98,6 +130,42 @@ export class OrderService {
             },
             data: {
                 MessageId: messageId,
+            },
+        });
+    }
+
+    async toggleAllOrdersMessageId(orderId: string, messageId: string) {
+        const order = await this.getById(orderId);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                AllOrdersMessageId: messageId,
+            },
+        });
+    }
+
+    async toggleActiveOrdersMessageId(orderId: string, messageId: string) {
+        const order = await this.getById(orderId);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                ActiveOrderMessageId: messageId,
+            },
+        });
+    }
+
+    async toggleIsWorking(orderId: string, isWorking: IsWorkingOrder) {
+        const order = await this.getById(orderId);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                IsWorking: isWorking,
             },
         });
     }

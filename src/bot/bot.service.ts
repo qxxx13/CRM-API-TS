@@ -20,14 +20,10 @@ export class BotService {
 
         let msgId: number;
 
+        //?Отправка сообщения мастеру
         await this.bot
             .sendMessage(+chatId, 'Новая заявка', { message_thread_id: +messageThreadId })
-            .then(
-                async (msg: TelegramBot.Message) => await (msgId = msg.message_id),
-                await serverInstance
-                    .patch(`orders/messageId?orderId=${order.Id}&messageId=${msgId}`)
-                    .then((res) => res.data),
-            )
+            .then(async (msg: TelegramBot.Message) => (msgId = msg.message_id))
             .catch((error) => console.log(error));
 
         const takeOrderOptions = {
@@ -39,6 +35,26 @@ export class BotService {
             message_id: msgId,
             reply_markup: takeOrderOptions,
         });
+
+        await serverInstance.patch(`orders/messageId?orderId=${order.Id}&messageId=${msgId}`).then((res) => res.data);
+
+        /* //* Отправка во все заявки
+        await this.bot
+            .sendMessage('-1002048995957', newOrderMessage(order), { message_thread_id: 4 })
+            .then(
+                async (msg: TelegramBot.Message) =>
+                    await serverInstance.patch(`orders/allOrdersMessageId?orderId=${order.Id}&messageId=${msg}`),
+            );
+        //*
+
+        //* Отправка в активные
+        await this.bot
+            .sendMessage(-1002048995957, newOrderMessage(order), { message_thread_id: 958 })
+            .then(
+                async (msg: TelegramBot.Message) =>
+                    await serverInstance.patch(`orders/activeOrdersMessageId?orderId=${order.Id}&messageId=${msg}`),
+            );
+        //* */
     }
 
     async takeOrderBotMessage(chatId: string, messageId: string, orderId: string) {

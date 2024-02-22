@@ -8,31 +8,36 @@ datasource db {
 }
 
 model Order {
-  Id                Int         @id @default(autoincrement())
-  Description       String
-  Address           String
-  Date              DateTime
-  Time              String?
-  Visit             Visit
-  ClientPhoneNumber String
-  ClientName        String?
-  MasterId          Int
-  AnnouncedPrice    String      @default("0")
-  Status            OrderStatus @default(pending)
-  Price             String      @default("0")
-  TelephoneRecord   String?
-  Latitude          Float?
-  Longitude         Float?
-  Total             Int         @default(0)
-  Expenses          Int         @default(0)
-  MasterName        String?
-  Comments          String?
-  Master            User        @relation(fields: [MasterId], references: [Id])
-  MessageId         String?
-  MasterSalary      Int         @default(0)
-  CompanyShare      Int         @default(0)
-  ClosingOrderId    Int?        @default(0)
-  BotMessage        String      @default("") @db.VarChar(500)
+  Id                   Int            @id @default(autoincrement())
+  Description          String
+  Address              String
+  City                 String
+  Date                 DateTime
+  Time                 String?
+  Visit                Visit
+  ClientPhoneNumber    String
+  ClientName           String?
+  MasterId             Int
+  AnnouncedPrice       String         @default("0")
+  Status               OrderStatus    @default(pending)
+  Price                String         @default("0")
+  TelephoneRecord      String?
+  Latitude             Float?
+  Longitude            Float?
+  Total                Int            @default(0)
+  Expenses             Int            @default(0)
+  MasterName           String?
+  Comments             String?
+  Master               User           @relation(fields: [MasterId], references: [Id])
+  MessageId            String?
+  AllOrdersMessageId   String?
+  ActiveOrderMessageId String?
+  MasterSalary         Int            @default(0)
+  CompanyShare         Int            @default(0)
+  ClosingOrderId       Int?           @default(0)
+  BotMessage           String         @default("") @db.VarChar(500)
+  IsWorking            IsWorkingOrder @default(close)
+  Type                 OrderType
 }
 
 model User {
@@ -58,6 +63,17 @@ enum OrderStatus {
   active //активная заявка
   masterWentForSparePart // Мастер отъехал за зч
   awaitingPayment // ожидает оплаты
+  takeToSD //забрал на сд
+}
+
+enum IsWorkingOrder {
+  isWorking
+  close
+}
+
+enum OrderType {
+  specialized
+  notSpecialized
 }
 
 enum UserStatus {

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, UsePipes, ValidationPipe, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { OrderService } from './order.service';
-import { Order, OrderStatus } from '@prisma/client';
+import { IsWorkingOrder, Order, OrderStatus } from '@prisma/client';
 import { CloseOrderDataType } from 'src/common/types';
 
 @Controller('orders')
@@ -18,8 +18,10 @@ export class OrderController {
         @Query('perPage') perPage: number = 10,
         @Query('status') status: OrderStatus | 'all' = 'all',
         @Query('searchValue') searchValue: string = '',
+        @Query('masterId') masterId: string | 'all' = 'all',
+        @Query('isWorking') isWorking: IsWorkingOrder | 'all' = 'all',
     ) {
-        return this.orderService.getAll(page, perPage, status, searchValue);
+        return this.orderService.getAll(page, perPage, status, searchValue, masterId, isWorking);
     }
 
     @Post('')
@@ -52,6 +54,21 @@ export class OrderController {
     @Patch('messageId')
     async toggleMessageId(@Query('orderId') orderId: string, @Query('messageId') messageId: string) {
         return this.orderService.toggleMessageId(orderId, messageId);
+    }
+
+    @Patch('allOrdersMessageId')
+    async toggleAllOrdersMessageId(@Query('orderId') orderId: string, @Query('messageId') messageId: string) {
+        return this.orderService.toggleAllOrdersMessageId(orderId, messageId);
+    }
+
+    @Patch('activeOrdersMessageId')
+    async toggleActiveOrdersMessageId(@Query('orderId') orderId: string, @Query('messageId') messageId: string) {
+        return this.orderService.toggleActiveOrdersMessageId(orderId, messageId);
+    }
+
+    @Patch('isWorking')
+    async toggleIsWorking(@Query('id') orderId: string, @Query('isWorking') isWorking: IsWorkingOrder) {
+        return this.orderService.toggleIsWorking(orderId, isWorking);
     }
 
     @Patch('orderMessage')

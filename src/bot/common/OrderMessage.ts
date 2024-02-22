@@ -12,6 +12,7 @@ ${translate(order.Status)}
 Дата: ${orderDate}
 Время: ${order.Time}
 Номер: ${orderClientPhoneNumber}
+Город: ${order.City}
 Адрес: ${order.Address}
 Визит: ${translate(order.Visit)}
 Клиент: ${order.ClientName}
