@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Order, User } from '@prisma/client';
 import * as TelegramBot from 'node-telegram-bot-api';
-import { newOrderMessage } from './common/OrderMessage';
+import { closeOrderAllMessage, closeOrderMessage, newOrderMessage } from './common/OrderMessage';
 import { serverInstance, clientInstance } from './common/instances';
 
 @Injectable()
@@ -27,7 +27,9 @@ export class BotService {
             .catch((error) => console.log(error));
 
         const takeOrderOptions = {
-            inline_keyboard: [[{ text: 'Прием/отказ', url: `${clientInstance}/take/${chatId}/${msgId}/${order.Id}` }]],
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `${clientInstance}/take/${chatId}/${msgId}/${order.Id}` }],
+            ],
         };
 
         await this.bot.editMessageText('Новая заявка', {
@@ -38,12 +40,14 @@ export class BotService {
 
         await serverInstance.patch(`orders/messageId?orderId=${order.Id}&messageId=${msgId}`).then((res) => res.data);
 
-        /* //* Отправка во все заявки
+        //* Отправка во все заявки
         await this.bot
-            .sendMessage('-1002048995957', newOrderMessage(order), { message_thread_id: 4 })
+            .sendMessage(-1002048995957, newOrderMessage(order), { message_thread_id: 4 })
             .then(
                 async (msg: TelegramBot.Message) =>
-                    await serverInstance.patch(`orders/allOrdersMessageId?orderId=${order.Id}&messageId=${msg}`),
+                    await serverInstance.patch(
+                        `orders/allOrdersMessageId?orderId=${order.Id}&messageId=${msg.message_id}`,
+                    ),
             );
         //*
 
@@ -52,79 +56,173 @@ export class BotService {
             .sendMessage(-1002048995957, newOrderMessage(order), { message_thread_id: 958 })
             .then(
                 async (msg: TelegramBot.Message) =>
-                    await serverInstance.patch(`orders/activeOrdersMessageId?orderId=${order.Id}&messageId=${msg}`),
+                    await serverInstance.patch(
+                        `orders/activeOrdersMessageId?orderId=${order.Id}&messageId=${msg.message_id}`,
+                    ),
             );
-        //* */
+        //*
     }
 
     async takeOrderBotMessage(chatId: string, messageId: string, orderId: string) {
         await serverInstance.patch(`orders/status?id=${orderId}&status=active`);
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'В работе', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }]],
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }],
+            ],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
 
-        this.bot.editMessageText(newOrderMessage(order), {
-            chat_id: chatId,
-            message_id: +messageId,
-            reply_markup: OrderOptions,
-        });
+        try {
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: chatId,
+                message_id: +messageId,
+                reply_markup: OrderOptions,
+            });
+
+            //* Редактирование в общей группе
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.AllOrdersMessageId,
+            });
+
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.ActiveOrderMessageId,
+            });
+            //*
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async atWorkOrderBotMessage(chatId: string, messageId: string, orderId: string) {
         await serverInstance.patch(`orders/status?id=${orderId}&status=atWork`);
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'В работе', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }]],
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }],
+            ],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
 
         await serverInstance.patch(`user/status?id=${order.MasterId}&status=atWork`);
 
-        this.bot.editMessageText(newOrderMessage(order), {
-            chat_id: chatId,
-            message_id: +messageId,
-            reply_markup: OrderOptions,
-        });
+        try {
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: chatId,
+                message_id: +messageId,
+                reply_markup: OrderOptions,
+            });
+
+            //* Редактирование в общей группе
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.AllOrdersMessageId,
+            });
+
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.ActiveOrderMessageId,
+            });
+            //*
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async sdOrderBotMessage(chatId: string, messageId: string, orderId: string) {
+        await serverInstance.patch(`orders/status?id=${orderId}&status=takeToSD`);
+
+        const OrderOptions = {
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }],
+            ],
+        };
+
+        const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
+
+        try {
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: chatId,
+                message_id: +messageId,
+                reply_markup: OrderOptions,
+            });
+
+            //* Редактирование в общей группе
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.AllOrdersMessageId,
+            });
+
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.ActiveOrderMessageId,
+            });
+            //*
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async wentForSpareOrderBotMessage(chatId: string, messageId: string, orderId: string) {
         await serverInstance.patch(`orders/status?id=${orderId}&status=masterWentForSparePart`);
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'Вернулся', url: `${clientInstance}/went/${chatId}/${messageId}/${orderId}` }]],
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `${clientInstance}/went/${chatId}/${messageId}/${orderId}` }],
+            ],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
 
-        this.bot.editMessageText(newOrderMessage(order), {
-            chat_id: chatId,
-            message_id: +messageId,
-            reply_markup: OrderOptions,
-        });
+        try {
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: chatId,
+                message_id: +messageId,
+                reply_markup: OrderOptions,
+            });
+
+            //* Редактирование в общей группе
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.AllOrdersMessageId,
+            });
+
+            await this.bot.editMessageText(newOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.ActiveOrderMessageId,
+            });
+            //*
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async closeOrderBotMessage(chatId: string, messageId: string, orderId: string) {
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
-        const newMessage = `#${order.Id}
-Закрыта
 
-Номер: ${order.ClientPhoneNumber.replaceAll('-', '')}
-Адрес: ${order.Address}
-——————
-К сдаче: ${order.CompanyShare}
+        const newMessage = closeOrderMessage(order);
 
-Забрал: ${order.Total}
-Расход: ${order.Expenses}
-Итог: ${order.Price}`;
+        try {
+            await this.bot.editMessageText(newMessage, {
+                chat_id: chatId,
+                message_id: +messageId,
+            });
 
-        this.bot.editMessageText(newMessage, {
-            chat_id: chatId,
-            message_id: +messageId,
-        });
+            //* Редактирование в общей группе
+            await this.bot.editMessageText(closeOrderAllMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.AllOrdersMessageId,
+            });
+
+            await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId);
+            //*
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async rejectByMasterOrderBotMessage(chatId: string, messageId: string, orderId: string) {

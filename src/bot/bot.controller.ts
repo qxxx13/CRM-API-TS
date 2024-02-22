@@ -47,6 +47,15 @@ export class BotController {
         this.botService.wentForSpareOrderBotMessage(chatId, messageId, orderId);
     }
 
+    @Patch('/sd')
+    async toggleOrderMessageSD(
+        @Query('chatId') chatId: string,
+        @Query('messageId') messageId: string,
+        @Query('orderId') orderId: string,
+    ) {
+        this.botService.sdOrderBotMessage(chatId, messageId, orderId);
+    }
+
     @Patch('/rejectMaster')
     async toggleOrderMessageRejectByMaster(
         @Query('chatId') chatId: string,

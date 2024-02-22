@@ -103,6 +103,7 @@ export class OrderService {
                 Expenses: +closeData.Expenses,
                 CompanyShare: +closeData.CompanyShare,
                 Comments: closeData.Comments,
+                Debt: +closeData.Debt,
             },
         });
     }

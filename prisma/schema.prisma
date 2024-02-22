@@ -26,6 +26,7 @@ model Order {
   Longitude            Float?
   Total                Int            @default(0)
   Expenses             Int            @default(0)
+  Debt                 Int            @default(0)
   MasterName           String?
   Comments             String?
   Master               User           @relation(fields: [MasterId], references: [Id])
@@ -64,6 +65,7 @@ enum OrderStatus {
   masterWentForSparePart // Мастер отъехал за зч
   awaitingPayment // ожидает оплаты
   takeToSD //забрал на сд
+  debt //Долг
 }
 
 enum IsWorkingOrder {

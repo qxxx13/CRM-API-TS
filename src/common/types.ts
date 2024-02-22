@@ -5,4 +5,5 @@ export type CloseOrderDataType = {
     CompanyShare: string;
     Price: string;
     Comments?: string;
+    Debt?: string;
 };
