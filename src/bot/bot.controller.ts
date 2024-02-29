@@ -11,6 +11,11 @@ export class BotController {
         this.botService.createOrderBotMessage(order);
     }
 
+    @Post('/edit')
+    async editOrderMessage(@Body() order: Order) {
+        this.botService.editOrderBotMessage(order);
+    }
+
     @Patch('/take')
     async toggleOrderMessage(
         @Query('chatId') chatId: string,

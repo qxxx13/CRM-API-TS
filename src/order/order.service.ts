@@ -78,6 +78,15 @@ export class OrderService {
         return newOrder;
     }
 
+    async edit(dto: Order) {
+        const editOrder = await this.prisma.order.update({
+            where: { Id: dto.Id },
+            data: dto,
+        });
+        await serverInstance.post('bot/edit', editOrder);
+        return editOrder;
+    }
+
     async toggleStatus(id: string, status: OrderStatus) {
         const order = await this.getById(id);
         return this.prisma.order.update({

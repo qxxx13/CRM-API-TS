@@ -28,7 +28,7 @@ export class BotService {
 
         const takeOrderOptions = {
             inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `${clientInstance}/take/${chatId}/${msgId}/${order.Id}` }],
+                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${msgId}/${order.Id}` }],
             ],
         };
 
@@ -60,6 +60,40 @@ export class BotService {
                         `orders/activeOrdersMessageId?orderId=${order.Id}&messageId=${msg.message_id}`,
                     ),
             );
+        //*
+    }
+
+    async editOrderBotMessage(order: Order) {
+        const master: User = (await serverInstance
+            .get(`user/${order.MasterId}`)
+            .then((res) => res.data)) as unknown as User;
+
+        const chatId = master.TelegramChatId;
+
+        const OrderOptions = {
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${order.MessageId}/${order.Id}` }],
+            ],
+        };
+
+        //?Изменение сообщения у мастера
+        await this.bot.editMessageText(newOrderMessage(order), { chat_id: chatId, message_id: +order.MessageId });
+
+        //* Изменение во всех заявках
+        await this.bot.editMessageText(newOrderMessage(order), {
+            chat_id: -1002048995957,
+            message_id: +order.AllOrdersMessageId,
+            reply_markup: OrderOptions,
+        });
+
+        //*
+
+        //* Изменение в активных
+        await this.bot.editMessageText(newOrderMessage(order), {
+            chat_id: -1002048995957,
+            message_id: +order.ActiveOrderMessageId,
+        });
+
         //*
     }
 
@@ -172,7 +206,7 @@ export class BotService {
 
         const OrderOptions = {
             inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `${clientInstance}/went/${chatId}/${messageId}/${orderId}` }],
+                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }],
             ],
         };
 

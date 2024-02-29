@@ -30,6 +30,12 @@ export class OrderController {
         return this.orderService.create(dto);
     }
 
+    @Post('/edit')
+    @UsePipes(new ValidationPipe())
+    async edit(@Body() dto: Order) {
+        return this.orderService.edit(dto);
+    }
+
     @Patch('status')
     async toggleStatus(@Query('id') id: string, @Query('status') status: OrderStatus) {
         return this.orderService.toggleStatus(id, status);
