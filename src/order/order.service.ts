@@ -103,7 +103,12 @@ export class OrderService {
         const order = await this.getById(id);
 
         try {
-            await serverInstance.patch(`/orders/status?id=${order.Id}&status=awaitingPayment`);
+            if (+closeData.Debt !== 0) {
+                await serverInstance.patch(`/orders/status?id=${order.Id}&status=debt`);
+            } else {
+                await serverInstance.patch(`/orders/status?id=${order.Id}&status=awaitingPayment`);
+            }
+
             await serverInstance.patch(`/orders/isWorking?id=${order.Id}&isWorking=close`);
             await serverInstance.patch(`/bot/close?chatId=${chatId}&messageId=${messageId}&orderId=${order.Id}`);
         } catch (error) {
