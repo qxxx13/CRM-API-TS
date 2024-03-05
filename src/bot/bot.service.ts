@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Order, User } from '@prisma/client';
 import * as TelegramBot from 'node-telegram-bot-api';
-import { closeOrderAllMessage, closeOrderMessage, newOrderMessage } from './common/OrderMessage';
+import { TelegramOrderMessage } from './common/OrderMessage';
 import { serverInstance, clientInstance } from './common/instances';
 
 @Injectable()
@@ -42,7 +42,7 @@ export class BotService {
 
         //* Отправка во все заявки
         await this.bot
-            .sendMessage(-1002048995957, newOrderMessage(order), { message_thread_id: 4 })
+            .sendMessage(-1002048995957, await TelegramOrderMessage(order), { message_thread_id: 4 })
             .then(
                 async (msg: TelegramBot.Message) =>
                     await serverInstance.patch(
@@ -53,7 +53,7 @@ export class BotService {
 
         //* Отправка в активные
         await this.bot
-            .sendMessage(-1002048995957, newOrderMessage(order), { message_thread_id: 958 })
+            .sendMessage(-1002048995957, await TelegramOrderMessage(order), { message_thread_id: 958 })
             .then(
                 async (msg: TelegramBot.Message) =>
                     await serverInstance.patch(
@@ -77,24 +77,39 @@ export class BotService {
         };
 
         //?Изменение сообщения у мастера
-        await this.bot.editMessageText(newOrderMessage(order), { chat_id: chatId, message_id: +order.MessageId });
+        await this.bot.editMessageText(await TelegramOrderMessage(order), {
+            chat_id: chatId,
+            message_id: +order.MessageId,
+            reply_markup: OrderOptions,
+        });
 
         //* Изменение во всех заявках
-        await this.bot.editMessageText(newOrderMessage(order), {
+        await this.bot.editMessageText(await TelegramOrderMessage(order), {
             chat_id: -1002048995957,
             message_id: +order.AllOrdersMessageId,
-            reply_markup: OrderOptions,
         });
 
         //*
 
         //* Изменение в активных
-        await this.bot.editMessageText(newOrderMessage(order), {
+        await this.bot.editMessageText(await TelegramOrderMessage(order), {
             chat_id: -1002048995957,
             message_id: +order.ActiveOrderMessageId,
         });
 
         //*
+    }
+
+    async deleteOrderBotMessage(chatId: string, messageId: string, orderId: string) {
+        const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
+
+        try {
+            await this.bot.deleteMessage(chatId, +messageId);
+            await this.bot.deleteMessage(-1002048995957, +order.AllOrdersMessageId);
+            await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async takeOrderBotMessage(chatId: string, messageId: string, orderId: string) {
@@ -109,19 +124,19 @@ export class BotService {
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
 
         try {
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: chatId,
                 message_id: +messageId,
                 reply_markup: OrderOptions,
             });
 
             //* Редактирование в общей группе
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             });
 
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.ActiveOrderMessageId,
             });
@@ -133,6 +148,7 @@ export class BotService {
 
     async atWorkOrderBotMessage(chatId: string, messageId: string, orderId: string) {
         await serverInstance.patch(`orders/status?id=${orderId}&status=atWork`);
+        await serverInstance.patch(`orders/isWorking?id=${orderId}&isWorking=isWorking`);
 
         const OrderOptions = {
             inline_keyboard: [
@@ -145,19 +161,19 @@ export class BotService {
         await serverInstance.patch(`user/status?id=${order.MasterId}&status=atWork`);
 
         try {
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: chatId,
                 message_id: +messageId,
                 reply_markup: OrderOptions,
             });
 
             //* Редактирование в общей группе
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             });
 
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.ActiveOrderMessageId,
             });
@@ -179,19 +195,19 @@ export class BotService {
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
 
         try {
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: chatId,
                 message_id: +messageId,
                 reply_markup: OrderOptions,
             });
 
             //* Редактирование в общей группе
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             });
 
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.ActiveOrderMessageId,
             });
@@ -213,19 +229,19 @@ export class BotService {
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
 
         try {
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: chatId,
                 message_id: +messageId,
                 reply_markup: OrderOptions,
             });
 
             //* Редактирование в общей группе
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             });
 
-            await this.bot.editMessageText(newOrderMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.ActiveOrderMessageId,
             });
@@ -238,16 +254,14 @@ export class BotService {
     async closeOrderBotMessage(chatId: string, messageId: string, orderId: string) {
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
 
-        const newMessage = closeOrderMessage(order);
-
         try {
-            await this.bot.editMessageText(newMessage, {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: chatId,
                 message_id: +messageId,
             });
 
             //* Редактирование в общей группе
-            await this.bot.editMessageText(closeOrderAllMessage(order), {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             });

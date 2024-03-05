@@ -41,9 +41,14 @@ export class OrderController {
         return this.orderService.toggleStatus(id, status);
     }
 
-    @Patch('closeOrder/:id')
-    async toggleCloseOrder(@Param('id') id: string, @Body() closeData: CloseOrderDataType) {
-        return this.orderService.closeOrder(id, closeData);
+    @Post('closeOrder/:id')
+    async toggleCloseOrder(
+        @Param('id') id: string,
+        @Query('chatId') chatId: string,
+        @Query('messageId') messageId: string,
+        @Body() closeData: CloseOrderDataType,
+    ) {
+        return this.orderService.closeOrder(id, closeData, chatId, messageId);
     }
 
     @Get('masterId/:id')
@@ -53,8 +58,8 @@ export class OrderController {
     }
 
     @Delete(':id')
-    async deleteOrder(@Param('id') id: string) {
-        return this.orderService.delete(id);
+    async deleteOrder(@Param('id') id: string, @Query('chatId') chatId: string, @Query('messageId') messageId: string) {
+        return this.orderService.delete(id, chatId, messageId);
     }
 
     @Patch('messageId')

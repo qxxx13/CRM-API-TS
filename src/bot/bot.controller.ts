@@ -16,6 +16,15 @@ export class BotController {
         this.botService.editOrderBotMessage(order);
     }
 
+    @Patch('/delete')
+    async deleteOrderMessage(
+        @Query('chatId') chatId: string,
+        @Query('messageId') messageId: string,
+        @Query('orderId') orderId: string,
+    ) {
+        this.botService.deleteOrderBotMessage(chatId, messageId, orderId);
+    }
+
     @Patch('/take')
     async toggleOrderMessage(
         @Query('chatId') chatId: string,

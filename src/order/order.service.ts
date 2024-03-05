@@ -99,8 +99,19 @@ export class OrderService {
         });
     }
 
-    async closeOrder(id: string, closeData: CloseOrderDataType) {
+    async closeOrder(id: string, closeData: CloseOrderDataType, chatId: string, messageId: string) {
         const order = await this.getById(id);
+
+        console.log(id, chatId, messageId, closeData);
+
+        try {
+            await serverInstance.patch(`/orders/status?id=${order.Id}&status=awaitingPayment`);
+            await serverInstance.patch(`/orders/isWorking?id=${order.Id}&isWorking=close`);
+            await serverInstance.patch(`/bot/close?chatId=${chatId}&messageId=${messageId}&orderId=${order.Id}`);
+        } catch (error) {
+            console.log(error);
+        }
+
         return this.prisma.order.update({
             where: {
                 Id: order.Id,
@@ -117,7 +128,13 @@ export class OrderService {
         });
     }
 
-    async delete(id: string) {
+    async delete(id: string, chatId: string, messageId: string) {
+        try {
+            await serverInstance.patch(`/bot/delete?orderId=${id}&chatId=${chatId}&messageId=${messageId}`);
+        } catch (error) {
+            console.log(error);
+        }
+
         return await this.prisma.order.delete({ where: { Id: +id } });
     }
 
