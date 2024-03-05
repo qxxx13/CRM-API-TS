@@ -82,6 +82,8 @@ ${translate(order.Status)}
             return `#${order.Id}
 Закрыта
 
+Мастер: ${master.UserName}
+
 Номер: ${order.ClientPhoneNumber.replaceAll('-', '')}
 Адрес: ${order.Address}
 ——————
@@ -130,6 +132,8 @@ ${translate(order.Status)}
         case 'debt':
             return `#${order.Id}
 ДОЛГ
+
+Мастер: ${master.UserName}
 
 Номер: ${order.ClientPhoneNumber.replaceAll('-', '')}
 Адрес: ${order.Address}

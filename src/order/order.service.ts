@@ -102,8 +102,6 @@ export class OrderService {
     async closeOrder(id: string, closeData: CloseOrderDataType, chatId: string, messageId: string) {
         const order = await this.getById(id);
 
-        console.log(id, chatId, messageId, closeData);
-
         try {
             await serverInstance.patch(`/orders/status?id=${order.Id}&status=awaitingPayment`);
             await serverInstance.patch(`/orders/isWorking?id=${order.Id}&isWorking=close`);
