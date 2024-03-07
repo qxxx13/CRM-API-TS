@@ -78,4 +78,13 @@ export class BotController {
     ) {
         this.botService.rejectByMasterOrderBotMessage(chatId, messageId, orderId);
     }
+
+    @Patch('/rejectClient')
+    async toggleOrderMessageRejectByClient(
+        @Query('chatId') chatId: string,
+        @Query('messageId') messageId: string,
+        @Query('orderId') orderId: string,
+    ) {
+        this.botService.rejectByClientOrderBotMessage(chatId, messageId, orderId);
+    }
 }
