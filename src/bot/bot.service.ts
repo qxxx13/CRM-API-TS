@@ -63,6 +63,48 @@ export class BotService {
         //*
     }
 
+    async distributionOrderBotMessage(order: Order) {
+        await this.bot
+            .sendMessage(-1002048995957, await TelegramOrderMessage(order), { message_thread_id: 1632 })
+            .then(
+                async (msg: TelegramBot.Message) =>
+                    await serverInstance.patch(
+                        `orders/distributionOrdersMessageId?orderId=${order.Id}&messageId=${msg.message_id}`,
+                    ),
+            );
+    }
+    async deleteDistributionMessage(messageId: string) {
+        await this.bot.deleteMessage(-1002048995957, +messageId);
+    }
+
+    async transferOrder(orderId: string) {
+        const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
+        const master: User = (await serverInstance
+            .get(`user/${order.MasterId}`)
+            .then((res) => res.data)) as unknown as User;
+
+        await this.bot
+            .sendMessage(-1002048995957, await TelegramOrderMessage(order), { message_thread_id: 1632 })
+            .then(
+                async (msg: TelegramBot.Message) =>
+                    await serverInstance.patch(
+                        `orders/distributionOrdersMessageId?orderId=${order.Id}&messageId=${msg.message_id}`,
+                    ),
+            );
+        try {
+            //* Изменение во всех заявках
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.AllOrdersMessageId,
+            });
+
+            await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId);
+            await this.bot.deleteMessage(master.TelegramChatId, +order.MessageId);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     async editOrderBotMessage(order: Order) {
         const master: User = (await serverInstance
             .get(`user/${order.MasterId}`)
@@ -76,28 +118,32 @@ export class BotService {
             ],
         };
 
-        //?Изменение сообщения у мастера
-        await this.bot.editMessageText(await TelegramOrderMessage(order), {
-            chat_id: chatId,
-            message_id: +order.MessageId,
-            reply_markup: OrderOptions,
-        });
+        try {
+            //?Изменение сообщения у мастера
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
+                chat_id: chatId,
+                message_id: +order.MessageId,
+                reply_markup: OrderOptions,
+            });
 
-        //* Изменение во всех заявках
-        await this.bot.editMessageText(await TelegramOrderMessage(order), {
-            chat_id: -1002048995957,
-            message_id: +order.AllOrdersMessageId,
-        });
+            //* Изменение во всех заявках
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.AllOrdersMessageId,
+            });
 
-        //*
+            //*
 
-        //* Изменение в активных
-        await this.bot.editMessageText(await TelegramOrderMessage(order), {
-            chat_id: -1002048995957,
-            message_id: +order.ActiveOrderMessageId,
-        });
+            //* Изменение в активных
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.ActiveOrderMessageId,
+            });
 
-        //*
+            //*
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async deleteOrderBotMessage(chatId: string, messageId: string, orderId: string) {
@@ -107,6 +153,8 @@ export class BotService {
             await this.bot.deleteMessage(chatId, +messageId);
             await this.bot.deleteMessage(-1002048995957, +order.AllOrdersMessageId);
             await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId);
+
+            await await serverInstance.delete(`/orders/${order.Id}`).then((res) => res.data);
         } catch (error) {
             console.log(error);
         }
@@ -276,6 +324,22 @@ export class BotService {
     async rejectByMasterOrderBotMessage(chatId: string, messageId: string, orderId: string) {
         await serverInstance.patch(`orders/status?id=${orderId}&status=rejectedByMaster`);
 
+        const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
+
+        try {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
+                chat_id: chatId,
+                message_id: +messageId,
+            });
+
+            //* Редактирование в общей группе
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.AllOrdersMessageId,
+            });
+
+            await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId);
+        } catch (error) {}
         this.bot.editMessageText('Заявка отклонена мастером', {
             chat_id: chatId,
             message_id: +messageId,
@@ -285,9 +349,24 @@ export class BotService {
     async rejectByClientOrderBotMessage(chatId: string, messageId: string, orderId: string) {
         await serverInstance.patch(`orders/status?id=${orderId}&status=rejectedByClient`);
 
-        this.bot.editMessageText('Заявка отклонена клиентом', {
-            chat_id: chatId,
-            message_id: +messageId,
-        });
+        const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
+
+        try {
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
+                chat_id: chatId,
+                message_id: +messageId,
+            });
+
+            //* Редактирование в общей группе
+            await this.bot.editMessageText(await TelegramOrderMessage(order), {
+                chat_id: -1002048995957,
+                message_id: +order.AllOrdersMessageId,
+            });
+
+            await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId);
+            //*
+        } catch (error) {
+            console.log(error);
+        }
     }
 }

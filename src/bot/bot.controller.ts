@@ -11,6 +11,21 @@ export class BotController {
         this.botService.createOrderBotMessage(order);
     }
 
+    @Post('/distribution')
+    async distributionOrderMessage(@Body() order: Order) {
+        this.botService.distributionOrderBotMessage(order);
+    }
+
+    @Patch('/deleteDistribution')
+    async deleteDistributionMessage(@Query('messageId') messageId: string) {
+        this.botService.deleteDistributionMessage(messageId);
+    }
+
+    @Patch('/transfer')
+    async transferOrderMessage(@Query('orderId') orderId: string) {
+        this.botService.transferOrder(orderId);
+    }
+
     @Post('/edit')
     async editOrderMessage(@Body() order: Order) {
         this.botService.editOrderBotMessage(order);

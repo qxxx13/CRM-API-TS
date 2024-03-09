@@ -129,6 +129,42 @@ ${translate(order.Status)}
 Озвучка: ${order.AnnouncedPrice}
 Описание: ${order.Description}`;
 
+        case 'distribution':
+            return `#${order.Id}
+${translate(order.Status)}
+——————
+
+Мастер: ${master.UserName}
+
+Дата: ${orderDate}
+Время: ${order.Time}
+Номер: ${orderClientPhoneNumber}
+Город: ${order.City}
+Адрес: ${order.Address}
+Визит: ${translate(order.Visit)}
+Клиент: ${order.ClientName}
+Имя мастера: ${order.MasterName}
+Озвучка: ${order.AnnouncedPrice}
+Описание: ${order.Description}`;
+
+        case 'transfer':
+            return `#${order.Id}
+${translate(order.Status)}
+——————
+
+Мастер: ${master.UserName}
+
+Дата: ${orderDate}
+Время: ${order.Time}
+Номер: ${orderClientPhoneNumber}
+Город: ${order.City}
+Адрес: ${order.Address}
+Визит: ${translate(order.Visit)}
+Клиент: ${order.ClientName}
+Имя мастера: ${order.MasterName}
+Озвучка: ${order.AnnouncedPrice}
+Описание: ${order.Description}`;
+
         case 'debt':
             return `#${order.Id}
 ДОЛГ

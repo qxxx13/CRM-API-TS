@@ -77,6 +77,11 @@ export class OrderController {
         return this.orderService.toggleActiveOrdersMessageId(orderId, messageId);
     }
 
+    @Patch('distributionOrdersMessageId')
+    async toggleDistributionOrdersMessageId(@Query('orderId') orderId: string, @Query('messageId') messageId: string) {
+        return this.orderService.toggleDistributionOrdersMessageId(orderId, messageId);
+    }
+
     @Patch('isWorking')
     async toggleIsWorking(@Query('id') orderId: string, @Query('isWorking') isWorking: IsWorkingOrder) {
         return this.orderService.toggleIsWorking(orderId, isWorking);

@@ -11,6 +11,8 @@ const dictionary: Record<string, string> = {
     primary: 'Первичный',
     repeated: 'Повторный',
     guarantee: 'Гарантия',
+    distribution: 'На распределении',
+    transfer: 'ПЕРЕНОС',
 };
 
 export const translate = (key: string) => {

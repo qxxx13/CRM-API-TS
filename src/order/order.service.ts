@@ -74,7 +74,10 @@ export class OrderService {
         const newOrder = await this.prisma.order.create({
             data: dto,
         });
-        await serverInstance.post('bot/create', newOrder);
+        if (newOrder.Status === 'distribution') {
+            await serverInstance.post('bot/distribution', newOrder);
+        } else await serverInstance.post('bot/create', newOrder);
+
         return newOrder;
     }
 
@@ -83,7 +86,10 @@ export class OrderService {
             where: { Id: dto.Id },
             data: dto,
         });
-        await serverInstance.post('bot/edit', editOrder);
+        if (editOrder.Status !== 'distribution' && editOrder.Status !== 'transfer') {
+            await serverInstance.post('bot/edit', editOrder);
+        }
+
         return editOrder;
     }
 
@@ -160,6 +166,18 @@ export class OrderService {
             },
             data: {
                 MessageId: messageId,
+            },
+        });
+    }
+
+    async toggleDistributionOrdersMessageId(orderId, messageId: string) {
+        const order = await this.getById(orderId);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                DistributionOrderMessageId: messageId,
             },
         });
     }
