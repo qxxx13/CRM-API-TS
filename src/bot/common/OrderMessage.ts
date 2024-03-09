@@ -9,6 +9,8 @@ export const TelegramOrderMessage = async (order: Order) => {
 
     const master = (await serverInstance.get(`user/${order.MasterId}`).then((res) => res.data)) as unknown as User;
 
+    const comments = order.Comments ? order.Comments : '';
+
     switch (order.Status) {
         case 'active':
             return `#${order.Id}
@@ -76,7 +78,10 @@ ${translate(order.Status)}
 
 Забрал: ${order.Total}
 Расход: ${order.Expenses}
-Итог: ${order.Price}`;
+Итог: ${order.Price}
+
+${comments}
+`;
 
         case 'fulfilled':
             return `#${order.Id}
@@ -91,7 +96,10 @@ ${translate(order.Status)}
 
 Забрал: ${order.Total}
 Расход: ${order.Expenses}
-Итог: ${order.Price}`;
+Итог: ${order.Price}
+
+${comments}
+`;
 
         case 'masterWentForSparePart':
             return `#${order.Id}
@@ -179,6 +187,8 @@ ${translate(order.Status)}
 Забрал: ${order.Total}
 Расход: ${order.Expenses}
 Долг: ${order.Debt}
-Итог: ${order.Price}`;
+Итог: ${order.Price}
+
+${comments}`;
     }
 };
