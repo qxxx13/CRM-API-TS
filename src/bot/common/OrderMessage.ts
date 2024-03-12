@@ -9,9 +9,50 @@ export const TelegramOrderMessage = async (order: Order) => {
 
     const master = (await serverInstance.get(`user/${order.MasterId}`).then((res) => res.data)) as unknown as User;
 
-    const comments = order.Comments ? order.Comments : '';
+    const comments = order.Comments ? `Комментарий: ${order.Comments}` : '';
+    const debt = order.Debt ? `Долг: ${order.Debt}` : '';
 
-    switch (order.Status) {
+    if (order.Status === 'debt' || order.Status === 'awaitingPayment') {
+        return `#${order.Id}
+${translate(order.Status)}
+
+Номер: ${order.ClientPhoneNumber.replaceAll('-', '')}
+Адрес: ${order.Address}
+——————
+
+К сдаче: ${order.CompanyShare}
+
+Забрал: ${order.Total}
+Расход: ${order.Expenses}
+Итог: ${order.Price}
+${debt}
+
+${comments}
+`;
+    } else {
+        return `#${order.Id}
+${translate(order.Status)}
+——————
+
+Мастер: ${master.UserName}
+
+Визит: ${translate(order.Visit)}
+Дата: ${orderDate}
+Время: ${order.Time}
+Номер: ${orderClientPhoneNumber}
+Город: ${order.City}
+Адрес: ${order.Address}
+Клиент: ${order.ClientName}
+Имя мастера: ${order.MasterName}
+Озвучка: ${order.AnnouncedPrice}
+Тип: ${translate(order.Type)}
+Описание: ${order.Description}
+
+${comments}
+`;
+    }
+
+    /* switch (order.Status) {
         case 'active':
             return `#${order.Id}
 ${translate(order.Status)}
@@ -31,6 +72,42 @@ ${translate(order.Status)}
 Описание: ${order.Description}`;
 
         case 'atWork':
+            return `#${order.Id}
+${translate(order.Status)}
+——————
+
+Мастер: ${master.UserName}
+
+Дата: ${orderDate}
+Время: ${order.Time}
+Номер: ${orderClientPhoneNumber}
+Город: ${order.City}
+Адрес: ${order.Address}
+Визит: ${translate(order.Visit)}
+Клиент: ${order.ClientName}
+Имя мастера: ${order.MasterName}
+Озвучка: ${order.AnnouncedPrice}
+Описание: ${order.Description}`;
+
+        case 'rejectedByClient':
+            return `#${order.Id}
+${translate(order.Status)}
+——————
+
+Мастер: ${master.UserName}
+
+Дата: ${orderDate}
+Время: ${order.Time}
+Номер: ${orderClientPhoneNumber}
+Город: ${order.City}
+Адрес: ${order.Address}
+Визит: ${translate(order.Visit)}
+Клиент: ${order.ClientName}
+Имя мастера: ${order.MasterName}
+Озвучка: ${order.AnnouncedPrice}
+Описание: ${order.Description}`;
+
+        case 'rejectedByMaster':
             return `#${order.Id}
 ${translate(order.Status)}
 ——————
@@ -190,5 +267,5 @@ ${translate(order.Status)}
 Итог: ${order.Price}
 
 ${comments}`;
-    }
+    } */
 };

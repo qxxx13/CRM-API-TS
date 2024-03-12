@@ -13,6 +13,10 @@ const dictionary: Record<string, string> = {
     guarantee: 'Гарантия',
     distribution: 'На распределении',
     transfer: 'ПЕРЕНОС',
+    awaitingPayment: 'Ожидает сдачи',
+    debt: 'ДОЛГ',
+    specialized: 'Профильная',
+    notSpecialized: 'Непрофильная',
 };
 
 export const translate = (key: string) => {
