@@ -17,6 +17,7 @@ const dictionary: Record<string, string> = {
     debt: 'ДОЛГ',
     specialized: 'Профильная',
     notSpecialized: 'Непрофильная',
+    airConditioner: 'Кондиционеры',
 };
 
 export const translate = (key: string) => {

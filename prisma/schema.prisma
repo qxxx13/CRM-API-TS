@@ -48,13 +48,42 @@ model User {
   Password        String
   TelegramChatId  String
   MessageThreadId String
+  TelegramId      String     @default("")
   Role            Role       @default(master)
   IsOnline        Boolean    @default(false)
   InterestRate    Int        @default(50) // Процентная ставка
   Status          UserStatus @default(atWork)
   Salary          Int        @default(0)
   Order           Order[]
-  Region          String     @default("Волгодонск")
+  Region          String     @default("")
+  Route           Route[]
+}
+
+model Coordinates {
+  Id         Int     @id @default(autoincrement())
+  Latitude   String // Широта
+  Longitude  String // Долгота
+  MapUrl     String?
+  Route      Route?  @relation(fields: [RouteId], references: [Id])
+  RouteId    Int?
+  Widespread String? // Раскидано
+}
+
+model Route {
+  Id            Int           @id @default(autoincrement())
+  Coordinates   Coordinates[]
+  City          String
+  UserId        User          @relation(fields: [userId], references: [Id])
+  userId        Int
+  Stage         Int
+  Status        RouteStatus
+  DateTimeClose DateTime
+}
+
+enum RouteStatus {
+  pending // Ожидает
+  active // Активен
+  atWork // В Работе
 }
 
 enum OrderStatus {
@@ -80,6 +109,7 @@ enum IsWorkingOrder {
 enum OrderType {
   specialized
   notSpecialized
+  airConditioner
 }
 
 enum UserStatus {
@@ -100,4 +130,5 @@ enum Role {
   admin
   disp
   regional
+  promouter
 }

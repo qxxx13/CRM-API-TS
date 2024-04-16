@@ -12,7 +12,7 @@ export const TelegramOrderMessage = async (order: Order) => {
     const comments = order.Comments ? `Комментарий: ${order.Comments}` : '';
     const debt = order.Debt ? `Долг: ${order.Debt}` : '';
 
-    if (order.Status === 'debt' || order.Status === 'awaitingPayment') {
+    if (order.Status === 'debt' || order.Status === 'awaitingPayment' || order.Status === 'fulfilled') {
         return `#${order.Id}
 ${translate(order.Status)}
 

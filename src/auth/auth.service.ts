@@ -10,8 +10,15 @@ export class AuthService {
         private jwtService: JwtService,
     ) {}
 
-    async validateUser(username: string, password: string) {
-        const user = await this.userService.findOneWithUserName(username);
+    async validateUser(telegramId: string, username: string, password: string) {
+        console.log(`tg: ${telegramId}`, `user: ${username}`, `pass: ${password}`);
+        let user: User;
+
+        if (username !== '') {
+            user = await this.userService.findOneWithUserName(username);
+        } else {
+            user = await this.userService.findOneWithTelegramId(telegramId);
+        }
 
         // TODO: You must to hash password in DB, and use bcrypt.compare(data, hash)
         if (user && password === user.Password) {
@@ -22,21 +29,37 @@ export class AuthService {
         return null;
     }
 
-    async login(user: { username: string; password: string }) {
-        const payload = {
+    async login(user: { telegramId: string; username: string; password: string }) {
+        /* const payload = {
+            telegramId: user.telegramId,
             username: user.username,
+        }; */
+        console.log(user);
+
+        const userData = await this.validateUser(user.telegramId, user.username, user.password);
+
+        return {
+            ...userData,
+            /* accessToken: this.jwtService.sign(payload),
+            refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }), */
+        };
+    }
+
+    /* async loginByTgId(user: { telegramId: string; password: string }) {
+        const payload = {
+            telegramId: user.telegramId,
         };
 
-        const userData = await this.validateUser(user.username, user.password);
+        console.log(user);
 
-        console.log(userData);
+        const userData = await this.validateUser(user.telegramId, '', user.password);
 
         return {
             ...userData,
             accessToken: this.jwtService.sign(payload),
             refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
         };
-    }
+    } */
 
     async refreshToken(user: User) {
         const payload = {
