@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User, UserStatus } from '@prisma/client';
+import { Role, User, UserStatus } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
@@ -12,8 +12,8 @@ export class UserController {
     }
 
     @Get('')
-    async getAllUsers() {
-        return this.userService.getAll();
+    async getAllUsers(@Query('role') role: Role | 'all') {
+        return this.userService.getAll(role);
     }
 
     @Post('')

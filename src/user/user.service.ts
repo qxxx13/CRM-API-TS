@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User, UserStatus } from '@prisma/client';
+import { Role, User, UserStatus } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
@@ -26,8 +26,8 @@ export class UserService {
         return (await user).InterestRate;
     }
 
-    async getAll() {
-        return await this.prisma.user.findMany();
+    async getAll(role: Role) {
+        return await this.prisma.user.findMany({ where: { Role: role } });
     }
 
     async create(dto: User) {

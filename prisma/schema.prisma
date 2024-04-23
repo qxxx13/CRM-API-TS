@@ -60,13 +60,15 @@ model User {
 }
 
 model Coordinates {
-  Id         Int     @id @default(autoincrement())
-  Latitude   String // Широта
-  Longitude  String // Долгота
-  MapUrl     String?
-  Route      Route?  @relation(fields: [RouteId], references: [Id])
-  RouteId    Int?
-  Widespread String? // Раскидано
+  Id            Int     @id @default(autoincrement())
+  Latitude      String  @default("0") // Широта
+  Longitude     String  @default("0") // Долгота
+  MapUrl        String?
+  Route         Route?  @relation(fields: [RouteId], references: [Id])
+  RouteId       Int?
+  Widespread    String? @default("0") // Раскидано @
+  Comments      String? @default("")
+  CoordinateUrl String? @default("")
 }
 
 model Route {
@@ -131,4 +133,6 @@ enum Role {
   disp
   regional
   promouter
+  fired //уволен
+  all
 }
