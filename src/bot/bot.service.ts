@@ -27,7 +27,9 @@ export class BotService {
             .catch((error) => console.log(error));
 
         const takeOrderOptions = {
-            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${order.Id}` }]],
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${order.Id}` }],
+            ],
         };
 
         await this.bot.editMessageText('Новая заявка', {
@@ -107,7 +109,9 @@ export class BotService {
         const chatId = master.TelegramChatId;
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${order.Id}` }]],
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${order.Id}` }],
+            ],
         };
 
         //* Изменение в распределении
@@ -167,7 +171,9 @@ export class BotService {
         await serverInstance.patch(`orders/status?id=${orderId}&status=active`);
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${orderId}` }]],
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${orderId}` }],
+            ],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
@@ -200,7 +206,9 @@ export class BotService {
         await serverInstance.patch(`orders/isWorking?id=${orderId}&isWorking=isWorking`);
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${orderId}` }]],
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${orderId}` }],
+            ],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
@@ -235,7 +243,9 @@ export class BotService {
         await serverInstance.patch(`orders/status?id=${orderId}&status=takeToSD`);
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${orderId}` }]],
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${orderId}` }],
+            ],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
@@ -268,7 +278,9 @@ export class BotService {
         await serverInstance.patch(`orders/status?id=${orderId}&status=masterWentForSparePart`);
 
         const OrderOptions = {
-            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${orderId}` }]],
+            inline_keyboard: [
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${orderId}` }],
+            ],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
