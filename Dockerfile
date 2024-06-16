@@ -7,10 +7,14 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
+USER daemon
+
 # Install app dependencies
 RUN npm install
 
 COPY . .
+
+
 
 RUN npm run build
 

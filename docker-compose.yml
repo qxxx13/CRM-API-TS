@@ -69,7 +69,7 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /home/root/crm-api/views/
+      device: /home/daemon/crm-api/views/
       o: bind
   postgres:
     name: crm-db
