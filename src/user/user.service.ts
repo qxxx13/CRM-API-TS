@@ -17,8 +17,8 @@ export class UserService {
         return await this.prisma.user.findFirst({ where: { UserName: userName } });
     }
 
-    async findOneWithTelegramId(telegramId: string) {
-        return await this.prisma.user.findFirst({ where: { TelegramId: telegramId } });
+    async findOneWithTelegramId(telegramId: number) {
+        return await this.prisma.user.findFirst({ where: { TelegramId: String(telegramId) } });
     }
 
     async getInterestRateById(id: string) {

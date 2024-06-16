@@ -10,7 +10,7 @@ export class AuthService {
         private jwtService: JwtService,
     ) {}
 
-    async validateUser(telegramId: string, username: string, password: string) {
+    async validateUser(telegramId: number, username: string, password: string) {
         console.log(`tg: ${telegramId}`, `user: ${username}`, `pass: ${password}`);
         let user: User;
 
@@ -29,7 +29,7 @@ export class AuthService {
         return null;
     }
 
-    async login(user: { telegramId: string; username: string; password: string }) {
+    async login(user: { telegramId: number; username: string; password: string }) {
         /* const payload = {
             telegramId: user.telegramId,
             username: user.username,

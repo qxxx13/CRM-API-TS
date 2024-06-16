@@ -14,7 +14,7 @@ export class AuthController {
 
     /* @UseGuards(LocalAuthGuard) */
     @Post('login')
-    async login(@Body() user: { telegramId: string; username: string; password: string }) {
+    async login(@Body() user: { telegramId: number; username: string; password: string }) {
         return await this.authService.login(user);
     }
 
