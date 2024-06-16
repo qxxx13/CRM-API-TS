@@ -11,6 +11,8 @@ services:
       - postgres
     env_file:
       - .env
+    networks:
+      - app-network
 
   postgres:
     image: postgres:16
@@ -33,9 +35,47 @@ services:
       - "5050:80"
     volumes:
       - pgadminData:/var/lib/pgadmin
+  webserver:
+    image: nginx:mainline-alpine
+    container_name: webserver
+    restart: always
+    ports:
+      - "4000:80"
+    volumes:
+      - web-root:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - crm-api
+    networks:
+      - app-network
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    depends_on:
+      - webserver
+    command: certonly --webroot --webroot-path=/var/www/html --email sammy@initcrm.ru --agree-tos --no-eff-email --staging -d initcrm.ru  -d www.initcrm.ru
+
 
 volumes:
+  certbot-etc:
+  certbot-var:
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/root/crm-api/views/
+      o: bind
   postgres:
     name: crm-db
   pgadminData:
+  
+networks:
+  app-network:
+    driver: bridge
 
