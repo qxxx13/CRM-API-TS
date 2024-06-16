@@ -10,7 +10,7 @@ COPY prisma ./prisma/
 # Install app dependencies
 COPY . .
 
-RUN npm run build
+#RUN npm run build
 
 FROM node:18
 
