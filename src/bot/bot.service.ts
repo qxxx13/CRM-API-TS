@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Order, User } from '@prisma/client';
 import * as TelegramBot from 'node-telegram-bot-api';
 import { TelegramOrderMessage } from './common/OrderMessage';
-import { serverInstance, clientInstance } from './common/instances';
+import { serverInstance } from './common/instances';
 
 @Injectable()
 export class BotService {
@@ -27,9 +27,7 @@ export class BotService {
             .catch((error) => console.log(error));
 
         const takeOrderOptions = {
-            inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${msgId}/${order.Id}` }],
-            ],
+            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${order.Id}` }]],
         };
 
         await this.bot.editMessageText('Новая заявка', {
@@ -109,9 +107,7 @@ export class BotService {
         const chatId = master.TelegramChatId;
 
         const OrderOptions = {
-            inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${order.MessageId}/${order.Id}` }],
-            ],
+            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${order.Id}` }]],
         };
 
         //* Изменение в распределении
@@ -171,9 +167,7 @@ export class BotService {
         await serverInstance.patch(`orders/status?id=${orderId}&status=active`);
 
         const OrderOptions = {
-            inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }],
-            ],
+            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${orderId}` }]],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
@@ -206,9 +200,7 @@ export class BotService {
         await serverInstance.patch(`orders/isWorking?id=${orderId}&isWorking=isWorking`);
 
         const OrderOptions = {
-            inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }],
-            ],
+            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${orderId}` }]],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
@@ -243,9 +235,7 @@ export class BotService {
         await serverInstance.patch(`orders/status?id=${orderId}&status=takeToSD`);
 
         const OrderOptions = {
-            inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }],
-            ],
+            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${orderId}` }]],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
@@ -278,9 +268,7 @@ export class BotService {
         await serverInstance.patch(`orders/status?id=${orderId}&status=masterWentForSparePart`);
 
         const OrderOptions = {
-            inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `${clientInstance}/work/${chatId}/${messageId}/${orderId}` }],
-            ],
+            inline_keyboard: [[{ text: 'Открыть заявку', url: `https://t.me/dev_orders_bot/orders/${orderId}` }]],
         };
 
         const order: Order = await serverInstance.get(`orders/${orderId}`).then((res) => res.data);
