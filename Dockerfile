@@ -7,8 +7,6 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-USER daemon
-
 # Install app dependencies
 COPY . .
 
