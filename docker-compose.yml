@@ -10,7 +10,7 @@ services:
     depends_on:
       - postgres
     env_file:
-      - .ENV
+      - .env
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
 
