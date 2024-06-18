@@ -11,7 +11,6 @@ COPY prisma ./prisma/
 RUN npm install
 
 COPY . .
-COPY ssl /ssl
 
 RUN npm run build
 
