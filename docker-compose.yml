@@ -21,8 +21,8 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     ports:
-      - '5556:80'
-      - '5556:443'
+      - '3030:80'
+      - '3030:443'
     depends_on:
       - nest-api
 
