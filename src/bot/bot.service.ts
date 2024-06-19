@@ -28,7 +28,7 @@ export class BotService {
 
         const takeOrderOptions = {
             inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${order.Id}` }],
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app/${order.Id}` }],
             ],
         };
 
@@ -110,7 +110,7 @@ export class BotService {
 
         const OrderOptions = {
             inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${order.Id}` }],
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app/${order.Id}` }],
             ],
         };
 
@@ -172,7 +172,7 @@ export class BotService {
 
         const OrderOptions = {
             inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${orderId}` }],
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app/${orderId}` }],
             ],
         };
 
@@ -207,7 +207,7 @@ export class BotService {
 
         const OrderOptions = {
             inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${orderId}` }],
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app/${orderId}` }],
             ],
         };
 
@@ -244,7 +244,7 @@ export class BotService {
 
         const OrderOptions = {
             inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${orderId}` }],
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app/${orderId}` }],
             ],
         };
 
@@ -279,7 +279,7 @@ export class BotService {
 
         const OrderOptions = {
             inline_keyboard: [
-                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app${orderId}` }],
+                [{ text: 'Открыть заявку', url: `https://t.me/orders_formaster_bot/orders_app/${orderId}` }],
             ],
         };
 
