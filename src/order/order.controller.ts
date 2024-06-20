@@ -20,8 +20,10 @@ export class OrderController {
         @Query('searchValue') searchValue: string = '',
         @Query('masterId') masterId: string | 'all' = 'all',
         @Query('isWorking') isWorking: IsWorkingOrder | 'all' = 'all',
+        @Query('startDate') startDate: Date | 'all' = 'all',
+        @Query('endDate') endDate: Date | 'all' = 'all',
     ) {
-        return this.orderService.getAll(page, perPage, status, searchValue, masterId, isWorking);
+        return this.orderService.getAll(page, perPage, status, searchValue, masterId, isWorking, startDate, endDate);
     }
 
     @Post('')

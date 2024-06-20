@@ -24,6 +24,8 @@ export class OrderService {
         searchValue: string,
         masterId: string | 'all',
         isWorking: IsWorkingOrder | 'all',
+        startDate: Date | 'all',
+        endDate: Date | 'all',
     ) {
         const paginate = createPaginator({ perPage });
 
@@ -31,6 +33,8 @@ export class OrderService {
         const search = searchValue !== '' ? searchValue : {};
         const searchByMasterId = masterId !== 'all' ? +masterId : {};
         const searchByIsWorking = isWorking !== 'all' ? isWorking : {};
+        const searchByStartDate = startDate !== 'all' ? new Date(startDate) : new Date('2020-01-01');
+        const searchByEndDate = endDate !== 'all' ? new Date(endDate) : new Date('2100-01-01');
 
         const orders = paginate<OrderDto, Prisma.OrderFindManyArgs>(
             this.prisma.order,
@@ -40,6 +44,10 @@ export class OrderService {
                     Status: searchByStatus,
                     ClientPhoneNumber: search,
                     IsWorking: searchByIsWorking,
+                    Date: {
+                        lte: searchByEndDate,
+                        gte: searchByStartDate,
+                    },
                 },
                 orderBy: { Id: 'desc' },
             },
