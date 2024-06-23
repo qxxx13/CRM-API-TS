@@ -38,14 +38,17 @@ services:
   postgres:
     image: postgres:16
     container_name: crm-db
-    ports:
-      - 5432:5432
-    env_file:
-      - .ENV
     environment:
-      POSTGRES_HOST_AUTH_METHOD: trust
+      PGDATA: /data/postgres
     volumes:
-      - postgres:/var/lib/postgresql/data
+       - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stoppe
+    .env_file:
+      - .ENV
 
   pgadmin4:
     image: dpage/pgadmin4
@@ -59,7 +62,10 @@ services:
     volumes:
       - pgadminData:/var/lib/pgadmin
 
+networks:
+  postgres:
+    driver: bridge
+
 volumes:
   postgres:
-    name: crmdb
   pgadminData:
