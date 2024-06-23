@@ -10,7 +10,7 @@ services:
     depends_on:
       - postgres
     env_file:
-      - .env
+      - .ENV
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
 
@@ -47,7 +47,7 @@ services:
     networks:
       - postgres
     restart: unless-stopped
-    .env_file:
+    env_file:
       - .ENV
 
   pgadmin4:
