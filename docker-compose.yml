@@ -58,6 +58,8 @@ services:
     volumes:
       - pgadminData:/var/lib/pgadmin
 
+
 volumes:
   postgres:
+    name: crm-db
   pgadminData:
