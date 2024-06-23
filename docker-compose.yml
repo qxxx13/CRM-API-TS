@@ -46,7 +46,7 @@ services:
       - "5432:5432"
     networks:
       - postgres
-    restart: unless-stoppe
+    restart: unless-stopped
     .env_file:
       - .ENV
 
