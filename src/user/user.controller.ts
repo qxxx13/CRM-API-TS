@@ -22,6 +22,12 @@ export class UserController {
         return this.userService.create(dto);
     }
 
+    @Post('/edit')
+    @UsePipes(new ValidationPipe())
+    async edit(@Body() dto: User) {
+        return this.userService.edit(dto);
+    }
+
     @Delete(':id')
     async deleteOrder(@Param('id') id: string) {
         return this.userService.delete(id);

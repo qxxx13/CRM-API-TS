@@ -36,6 +36,13 @@ export class UserService {
         });
     }
 
+    async edit(dto: User) {
+        return await this.prisma.user.update({
+            where: { Id: dto.Id },
+            data: dto,
+        });
+    }
+
     async toggleStatus(id: string, status: UserStatus) {
         const user = await this.getById(+id);
         return this.prisma.user.update({
