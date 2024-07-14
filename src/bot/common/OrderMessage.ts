@@ -15,11 +15,21 @@ export const TelegramOrderMessage = async (order: Order) => {
     if (order.Status === 'debt' || order.Status === 'awaitingPayment' || order.Status === 'fulfilled') {
         return `#${order.Id}
 ${translate(order.Status)}
+——————
 
 Мастер: ${master.UserName}
 
-Номер: ${order.ClientPhoneNumber.replaceAll('-', '')}
+Визит: ${translate(order.Visit)}
+Дата: ${orderDate}
+Время: ${order.Time}
+Номер: ${orderClientPhoneNumber}
+Город: ${order.City}
 Адрес: ${order.Address}
+Клиент: ${order.ClientName}
+Имя мастера: ${order.MasterName}
+Озвучка: ${order.AnnouncedPrice}
+Тип: ${translate(order.Type)}
+Описание: ${order.Description}
 ——————
 
 К сдаче: ${order.CompanyShare}
