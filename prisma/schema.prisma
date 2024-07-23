@@ -29,7 +29,15 @@ model Order {
   Debt                       Int            @default(0)
   MasterName                 String?
   Comments                   String?
-  Master                     User           @relation(fields: [MasterId], references: [Id])
+  Master                     User           @relation("Order", fields: [MasterId], references: [Id])
+  Referral                   User?          @relation("OrderRef", fields: [ReferralId], references: [Id])
+  Disp                       User?          @relation("OrderCreater", fields: [DispId], references: [Id])
+  OrderCloser                User?          @relation("OrderCloser", fields: [OrderCloserId], references: [Id])
+  ReasonImage                Image?         @relation("ReasonImage", fields: [ReasonImageId], references: [Id])
+  ReasonImageId              Int?
+  OrderCloserId              Int?
+  DispId                     Int?
+  ReferralId                 Int?
   MessageId                  String?
   AllOrdersMessageId         String?
   ActiveOrderMessageId       String?
@@ -54,9 +62,14 @@ model User {
   InterestRate    Int        @default(50) // Процентная ставка
   Status          UserStatus @default(atWork)
   Salary          Int        @default(0)
-  Order           Order[]
+  Order           Order[]    @relation("Order")
+  OrderRef        Order[]    @relation("OrderRef")
+  OrderCreater    Order[]    @relation("OrderCreater")
+  OrderCloser     Order[]    @relation("OrderCloser")
   Region          String     @default("")
   Route           Route[]
+  Avatar          Image?     @relation(fields: [AvatarId], references: [Id])
+  AvatarId        Int?
 }
 
 model Coordinates {
@@ -82,6 +95,14 @@ model Route {
   DateTimeClose DateTime
 }
 
+model Image {
+  Id          Int     @id @default(autoincrement())
+  FileName    String
+  Data        Bytes   @db.ByteA
+  User        User[]
+  ReasonImage Order[] @relation("ReasonImage")
+}
+
 enum RouteStatus {
   pending // Ожидает
   active // Активен
@@ -90,7 +111,7 @@ enum RouteStatus {
 
 enum OrderStatus {
   pending // Ожидает
-  fulfilled // Успешно
+  fulfilled // Закрыта
   rejectedByClient // Отказ клиента
   rejectedByMaster // Отказ мастера
   atWork // В работе
@@ -101,6 +122,7 @@ enum OrderStatus {
   debt //Долг
   distribution // На распределении
   transfer // Перенос
+  missedCall // Недозвон
 }
 
 enum IsWorkingOrder {
@@ -133,6 +155,7 @@ enum Role {
   disp
   regional
   promouter
+  dir
   fired //уволен
   all
 }

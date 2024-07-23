@@ -1,6 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    UploadedFile,
+    UseInterceptors,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { Role, User, UserStatus } from '@prisma/client';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
@@ -26,6 +40,12 @@ export class UserController {
     @UsePipes(new ValidationPipe())
     async edit(@Body() dto: User) {
         return this.userService.edit(dto);
+    }
+
+    @Post('/avatar')
+    @UseInterceptors(FileInterceptor('file'))
+    async addAvatar(@Query('userId') userId: string, @UploadedFile() file: Express.Multer.File) {
+        return this.userService.addAvatar(+userId, file.buffer, file.originalname);
     }
 
     @Delete(':id')

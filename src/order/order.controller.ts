@@ -1,7 +1,21 @@
-import { Controller, Get, Post, UsePipes, ValidationPipe, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    UsePipes,
+    ValidationPipe,
+    Body,
+    Patch,
+    Param,
+    Delete,
+    Query,
+    UseInterceptors,
+    UploadedFile,
+} from '@nestjs/common';
 import { OrderService } from './order.service';
 import { IsWorkingOrder, Order, OrderStatus } from '@prisma/client';
 import { CloseOrderDataType } from 'src/common/types';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('orders')
 export class OrderController {
@@ -43,14 +57,26 @@ export class OrderController {
         return this.orderService.toggleStatus(id, status);
     }
 
+    @Patch('closerId')
+    async patchCloserId(@Query('orderId') orderId: string, @Query('closerId') closerId: string) {
+        return this.orderService.patchCloserId(orderId, closerId);
+    }
+
+    @Patch('reasonImage')
+    @UseInterceptors(FileInterceptor('file'))
+    async patchReasonImage(@Query('orderId') orderId: string, @UploadedFile() file: Express.Multer.File) {
+        return this.orderService.patchReasonImage(orderId, file.buffer, file.originalname);
+    }
+
     @Post('closeOrder/:id')
     async toggleCloseOrder(
         @Param('id') id: string,
         @Query('chatId') chatId: string,
         @Query('messageId') messageId: string,
+        @Query('closerId') closerId: string,
         @Body() closeData: CloseOrderDataType,
     ) {
-        return this.orderService.closeOrder(id, closeData, chatId, messageId);
+        return this.orderService.closeOrder(id, closeData, chatId, messageId, closerId);
     }
 
     @Get('masterId/:id')

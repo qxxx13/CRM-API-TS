@@ -1,16 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Role, User, UserStatus } from '@prisma/client';
+import { FilesService } from 'src/files/files.service';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class UserService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private readonly fileService: FilesService,
+    ) {}
 
     async getById(id: number) {
         const user = await this.prisma.user.findUnique({ where: { Id: id } });
         if (!user) {
             throw new NotFoundException('User not found!');
         } else return user;
+    }
+
+    async addAvatar(userId: number, imageBuffer: Buffer, fileName: string) {
+        const avatar = await this.fileService.uploadFile(imageBuffer, fileName);
+        await this.prisma.user.update({ where: { Id: userId }, data: { AvatarId: avatar.Id } });
+
+        return avatar;
     }
 
     async findOneWithUserName(userName: string) {

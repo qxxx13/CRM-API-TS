@@ -7,8 +7,9 @@ import { LocalStrategy } from './strategies/local-strategy';
 import { PrismaService } from 'src/prisma.service';
 import { JwtStrategy } from './strategies/jwt-strategy';
 import { RefreshJwtStrategy } from './strategies/refreshToken-strategy';
+import { FilesService } from 'src/files/files.service';
 @Module({
-    providers: [AuthService, UserService, LocalStrategy, JwtStrategy, PrismaService, RefreshJwtStrategy],
+    providers: [AuthService, UserService, LocalStrategy, JwtStrategy, PrismaService, RefreshJwtStrategy, FilesService],
     controllers: [AuthController],
     imports: [
         JwtModule.register({

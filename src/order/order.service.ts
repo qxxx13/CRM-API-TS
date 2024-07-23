@@ -5,10 +5,14 @@ import { createPaginator } from 'prisma-pagination';
 import { OrderDto } from './order.dto';
 import { CloseOrderDataType } from 'src/common/types';
 import { serverInstance } from 'src/bot/common/instances';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class OrderService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private readonly fileService: FilesService,
+    ) {}
 
     async getById(id: string) {
         const order = await this.prisma.order.findUnique({ where: { Id: +id } });
@@ -113,17 +117,30 @@ export class OrderService {
         });
     }
 
-    async closeOrder(id: string, closeData: CloseOrderDataType, chatId: string, messageId: string) {
+    async patchCloserId(orderId: string, closerId: string) {
+        const order = await this.getById(orderId);
+        return this.prisma.order.update({
+            where: {
+                Id: order.Id,
+            },
+            data: {
+                OrderCloserId: +closerId,
+            },
+        });
+    }
+
+    async closeOrder(id: string, closeData: CloseOrderDataType, chatId: string, messageId: string, closerId: string) {
         const order = await this.getById(id);
+
+        await this.patchCloserId(String(order.Id), closerId);
 
         try {
             if (+closeData.Debt !== 0) {
-                await serverInstance.patch(`/orders/status?id=${order.Id}&status=debt`);
+                await this.toggleStatus(String(order.Id), OrderStatus.debt);
             } else {
-                await serverInstance.patch(`/orders/status?id=${order.Id}&status=awaitingPayment`);
+                await this.toggleStatus(String(order.Id), OrderStatus.awaitingPayment);
             }
-
-            await serverInstance.patch(`/orders/isWorking?id=${order.Id}&isWorking=close`);
+            this.toggleIsWorking(String(order.Id), IsWorkingOrder.close);
             await serverInstance.patch(`/bot/close?chatId=${chatId}&messageId=${messageId}&orderId=${order.Id}`);
         } catch (error) {
             console.log(error);
@@ -241,5 +258,17 @@ export class OrderService {
     async getMessageId(orderId: string) {
         const order = await this.getById(orderId);
         return order.MessageId;
+    }
+
+    async patchReasonImage(orderId: string, imageBuffer: Buffer, fileName: string) {
+        const image = await this.fileService.uploadFile(imageBuffer, fileName);
+        const order = await this.getById(orderId);
+
+        await this.prisma.order.update({
+            where: { Id: order.Id },
+            data: {
+                ReasonImageId: image.Id,
+            },
+        });
     }
 }
