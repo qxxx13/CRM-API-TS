@@ -134,17 +134,15 @@ export class OrderService {
 
         await this.patchCloserId(String(order.Id), closerId);
 
-        try {
-            if (+closeData.Debt !== 0) {
-                await this.toggleStatus(String(order.Id), OrderStatus.debt);
-            } else {
-                await this.toggleStatus(String(order.Id), OrderStatus.awaitingPayment);
-            }
-            this.toggleIsWorking(String(order.Id), IsWorkingOrder.close);
-            await serverInstance.patch(`/bot/close?chatId=${chatId}&messageId=${messageId}&orderId=${order.Id}`);
-        } catch (error) {
-            console.log(error);
+        if (+closeData.Debt !== 0) {
+            await this.toggleStatus(String(order.Id), OrderStatus.debt).catch((e) => console.log(e));
+        } else {
+            await this.toggleStatus(String(order.Id), OrderStatus.awaitingPayment).catch((e) => console.log(e));
         }
+        this.toggleIsWorking(String(order.Id), IsWorkingOrder.close);
+        await serverInstance
+            .patch(`/bot/close?chatId=${chatId}&messageId=${messageId}&orderId=${order.Id}`)
+            .catch((e) => console.log(e));
 
         return this.prisma.order.update({
             where: {
@@ -163,11 +161,7 @@ export class OrderService {
     }
 
     async delete(id: string, chatId: string, messageId: string) {
-        try {
-            await serverInstance.patch(`/bot/delete?orderId=${id}&chatId=${chatId}&messageId=${messageId}`);
-        } catch (error) {
-            console.log(error);
-        }
+        await serverInstance.patch(`/bot/delete?orderId=${id}&chatId=${chatId}&messageId=${messageId}`).catch((e) => e);
 
         return await this.prisma.order.delete({ where: { Id: +id } });
     }

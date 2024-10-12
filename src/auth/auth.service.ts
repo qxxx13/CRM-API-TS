@@ -11,7 +11,6 @@ export class AuthService {
     ) {}
 
     async validateUser(telegramId: number, username: string, password: string) {
-        console.log(`tg: ${telegramId}`, `user: ${username}`, `pass: ${password}`);
         let user: User;
 
         if (username !== '') {
@@ -30,12 +29,6 @@ export class AuthService {
     }
 
     async login(user: { telegramId: number; username: string; password: string }) {
-        /* const payload = {
-            telegramId: user.telegramId,
-            username: user.username,
-        }; */
-        console.log(user);
-
         const userData = await this.validateUser(user.telegramId, user.username, user.password);
 
         return {

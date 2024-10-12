@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Order, User } from '@prisma/client';
 import * as TelegramBot from 'node-telegram-bot-api';
 import { TelegramOrderMessage } from './common/OrderMessage';
@@ -24,7 +24,9 @@ export class BotService {
         await this.bot
             .sendMessage(+chatId, 'Новая заявка', { message_thread_id: +messageThreadId })
             .then(async (msg: TelegramBot.Message) => (msgId = msg.message_id))
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         const takeOrderOptions = {
             inline_keyboard: [
@@ -75,7 +77,9 @@ export class BotService {
     }
 
     async deleteDistributionMessage(messageId: string) {
-        await this.bot.deleteMessage(-1002048995957, +messageId).catch((error) => console.log(error));
+        await this.bot.deleteMessage(-1002048995957, +messageId).catch((error) => {
+            throw new Error(error);
+        });
     }
 
     async transferOrder(orderId: string) {
@@ -84,12 +88,18 @@ export class BotService {
             .get(`user/${order.MasterId}`)
             .then((res) => res.data)) as unknown as User;
 
-        await this.bot
-            .deleteMessage(-1002048995957, +order.DistributionOrderMessageId)
-            .catch((error) => console.log(error));
-        await this.bot.deleteMessage(-1002048995957, +order.AllOrdersMessageId).catch((error) => console.log(error));
-        await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => console.log(error));
-        await this.bot.deleteMessage(master.TelegramChatId, +order.MessageId).catch((error) => console.log(error));
+        await this.bot.deleteMessage(-1002048995957, +order.DistributionOrderMessageId).catch((error) => {
+            throw new Error(error);
+        });
+        await this.bot.deleteMessage(-1002048995957, +order.AllOrdersMessageId).catch((error) => {
+            throw new Error(error);
+        });
+        await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
+            throw new Error(error);
+        });
+        await this.bot.deleteMessage(master.TelegramChatId, +order.MessageId).catch((error) => {
+            throw new Error(error);
+        });
 
         await this.bot
             .sendMessage(-1002048995957, await TelegramOrderMessage(order), { message_thread_id: 1632 })
@@ -120,7 +130,9 @@ export class BotService {
                 chat_id: -1002048995957,
                 message_id: +order.DistributionOrderMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         //* Изменение во всех заявках
         await this.bot
@@ -128,7 +140,9 @@ export class BotService {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         //* Изменение в активных
         await this.bot
@@ -136,7 +150,9 @@ export class BotService {
                 chat_id: -1002048995957,
                 message_id: +order.ActiveOrderMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         //?Изменение сообщения у мастера
         await this.bot
@@ -145,26 +161,38 @@ export class BotService {
                 message_id: +order.MessageId,
                 reply_markup: OrderOptions,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
     }
 
     async deleteOrderBotMessage(chatId: string, messageId: string, orderId: string) {
         const order: Order = await serverInstance
             .get(`orders/${orderId}`)
             .then((res) => res.data)
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
-        await this.bot.deleteMessage(-1002048995957, +order.AllOrdersMessageId).catch((error) => console.log(error));
-        await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => console.log(error));
-        await this.bot
-            .deleteMessage(-1002048995957, +order.DistributionOrderMessageId)
-            .catch((error) => console.log(error));
-        await this.bot.deleteMessage(chatId, +messageId).catch((error) => console.log(error));
+        await this.bot.deleteMessage(-1002048995957, +order.AllOrdersMessageId).catch((error) => {
+            throw new Error(error);
+        });
+        await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
+            throw new Error(error);
+        });
+        await this.bot.deleteMessage(-1002048995957, +order.DistributionOrderMessageId).catch((error) => {
+            throw new Error(error);
+        });
+        await this.bot.deleteMessage(chatId, +messageId).catch((error) => {
+            throw new Error(error);
+        });
 
         await serverInstance
             .delete(`/orders/${order.Id}`)
             .then((res) => res.data)
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
     }
 
     async takeOrderBotMessage(chatId: string, messageId: string, orderId: string) {
@@ -182,14 +210,18 @@ export class BotService {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         await this.bot
             .editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.ActiveOrderMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
         //*
 
         await this.bot
@@ -198,7 +230,9 @@ export class BotService {
                 message_id: +messageId,
                 reply_markup: OrderOptions,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
     }
 
     async atWorkOrderBotMessage(chatId: string, messageId: string, orderId: string) {
@@ -221,14 +255,18 @@ export class BotService {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         await this.bot
             .editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.ActiveOrderMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         await this.bot
             .editMessageText(await TelegramOrderMessage(order), {
@@ -236,7 +274,9 @@ export class BotService {
                 message_id: +messageId,
                 reply_markup: OrderOptions,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
     }
 
     async sdOrderBotMessage(chatId: string, messageId: string, orderId: string) {
@@ -255,14 +295,18 @@ export class BotService {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         await this.bot
             .editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.ActiveOrderMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
         //*
 
         await this.bot
@@ -271,7 +315,9 @@ export class BotService {
                 message_id: +messageId,
                 reply_markup: OrderOptions,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
     }
 
     async wentForSpareOrderBotMessage(chatId: string, messageId: string, orderId: string) {
@@ -290,14 +336,18 @@ export class BotService {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         await this.bot
             .editMessageText(await TelegramOrderMessage(order), {
                 chat_id: -1002048995957,
                 message_id: +order.ActiveOrderMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         await this.bot
             .editMessageText(await TelegramOrderMessage(order), {
@@ -305,7 +355,9 @@ export class BotService {
                 message_id: +messageId,
                 reply_markup: OrderOptions,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
     }
 
     async closeOrderBotMessage(chatId: string, messageId: string, orderId: string) {
@@ -316,7 +368,9 @@ export class BotService {
                 chat_id: chatId,
                 message_id: +messageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         //* Редактирование в общей группе
         await this.bot
@@ -324,9 +378,13 @@ export class BotService {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
-        await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => console.log(error));
+        await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
+            throw new Error(error);
+        });
     }
 
     async rejectByMasterOrderBotMessage(chatId: string, messageId: string, orderId: string) {
@@ -342,14 +400,18 @@ export class BotService {
                         `orders/distributionOrdersMessageId?orderId=${order.Id}&messageId=${msg.message_id}`,
                     ),
             )
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         await this.bot
             .editMessageText('Заявка отклонена мастером', {
                 chat_id: chatId,
                 message_id: +messageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
         //* Редактирование в общей группе
         await this.bot
@@ -357,9 +419,13 @@ export class BotService {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
-        await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => console.log(error));
+        await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
+            throw new Error(error);
+        });
     }
 
     async rejectByClientOrderBotMessage(chatId: string, messageId: string, orderId: string) {
@@ -373,9 +439,13 @@ export class BotService {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
-        await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => console.log(error));
+        await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
+            throw new Error(error);
+        });
         //*
 
         await this.bot
@@ -383,10 +453,12 @@ export class BotService {
                 chat_id: chatId,
                 message_id: +messageId,
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                throw new Error(error);
+            });
 
-        await this.bot
-            .deleteMessage(-1002048995957, +order.DistributionOrderMessageId)
-            .catch((error) => console.log(error));
+        await this.bot.deleteMessage(-1002048995957, +order.DistributionOrderMessageId).catch((error) => {
+            throw new Error(error);
+        });
     }
 }

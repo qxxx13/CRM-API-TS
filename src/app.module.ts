@@ -7,9 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { BotModule } from './bot/bot.module';
 import { PromouterModule } from './promouter/promouter.module';
 import { FilesModule } from './files/files.module';
+import { CompanyModule } from './company/company.module';
 
 @Module({
-    imports: [OrderModule, UserModule, AuthModule, BotModule, PromouterModule, FilesModule],
+    imports: [OrderModule, UserModule, AuthModule, BotModule, PromouterModule, FilesModule, CompanyModule],
     controllers: [AppController],
     providers: [AppService],
 })
