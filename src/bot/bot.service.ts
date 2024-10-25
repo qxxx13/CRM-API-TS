@@ -14,7 +14,7 @@ export class BotService {
         const master: User = (await serverInstance
             .get(`user/${order.MasterId}`)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             })
             .then((res) => res.data)) as unknown as User;
 
@@ -28,7 +28,7 @@ export class BotService {
             .sendMessage(+chatId, 'Новая заявка', { message_thread_id: +messageThreadId })
             .then(async (msg: TelegramBot.Message) => (msgId = msg.message_id))
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         const takeOrderOptions = {
@@ -47,7 +47,7 @@ export class BotService {
             .patch(`orders/messageId?orderId=${order.Id}&messageId=${msgId}`)
             .then((res) => res.data)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         //* Отправка во все заявки
@@ -60,7 +60,7 @@ export class BotService {
                     ),
             )
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
         //*
 
@@ -74,7 +74,7 @@ export class BotService {
                     ),
             )
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
         //*
     }
@@ -89,13 +89,13 @@ export class BotService {
                     ),
             )
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
     }
 
     async deleteDistributionMessage(messageId: string) {
         await this.bot.deleteMessage(-1002048995957, +messageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
     }
 
@@ -104,26 +104,26 @@ export class BotService {
             .get(`orders/${orderId}`)
             .then((res) => res.data)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
         const master: User = (await serverInstance
             .get(`user/${order.MasterId}`)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             })
             .then((res) => res.data)) as unknown as User;
 
         await this.bot.deleteMessage(-1002048995957, +order.DistributionOrderMessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
         await this.bot.deleteMessage(-1002048995957, +order.AllOrdersMessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
         await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
         await this.bot.deleteMessage(master.TelegramChatId, +order.MessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
 
         await this.bot
@@ -135,7 +135,7 @@ export class BotService {
                     ),
             )
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
     }
 
@@ -143,7 +143,7 @@ export class BotService {
         const master: User = (await serverInstance
             .get(`user/${order.MasterId}`)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             })
             .then((res) => res.data)) as unknown as User;
 
@@ -162,7 +162,7 @@ export class BotService {
                 message_id: +order.DistributionOrderMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         //* Изменение во всех заявках
@@ -172,7 +172,7 @@ export class BotService {
                 message_id: +order.AllOrdersMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         //* Изменение в активных
@@ -182,7 +182,7 @@ export class BotService {
                 message_id: +order.ActiveOrderMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         //?Изменение сообщения у мастера
@@ -193,7 +193,7 @@ export class BotService {
                 reply_markup: OrderOptions,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
     }
 
@@ -202,27 +202,27 @@ export class BotService {
             .get(`orders/${orderId}`)
             .then((res) => res.data)
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot.deleteMessage(-1002048995957, +order.AllOrdersMessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
         await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
         await this.bot.deleteMessage(-1002048995957, +order.DistributionOrderMessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
         await this.bot.deleteMessage(chatId, +messageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
 
         await serverInstance
             .delete(`/orders/${order.Id}`)
             .then((res) => res.data)
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
     }
 
@@ -239,7 +239,7 @@ export class BotService {
             .get(`orders/${orderId}`)
             .then((res) => res.data)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
         await this.bot
             .editMessageText(await TelegramOrderMessage(order), {
@@ -247,7 +247,7 @@ export class BotService {
                 message_id: +order.AllOrdersMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -256,7 +256,7 @@ export class BotService {
                 message_id: +order.ActiveOrderMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
         //*
 
@@ -267,7 +267,7 @@ export class BotService {
                 reply_markup: OrderOptions,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
     }
 
@@ -285,7 +285,7 @@ export class BotService {
             .get(`orders/${orderId}`)
             .then((res) => res.data)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await serverInstance.patch(`user/status?id=${order.MasterId}&status=atWork`);
@@ -297,7 +297,7 @@ export class BotService {
                 message_id: +order.AllOrdersMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -306,7 +306,7 @@ export class BotService {
                 message_id: +order.ActiveOrderMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -316,7 +316,7 @@ export class BotService {
                 reply_markup: OrderOptions,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
     }
 
@@ -333,7 +333,7 @@ export class BotService {
             .get(`orders/${orderId}`)
             .then((res) => res.data)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -342,7 +342,7 @@ export class BotService {
                 message_id: +order.AllOrdersMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -351,7 +351,7 @@ export class BotService {
                 message_id: +order.ActiveOrderMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
         //*
 
@@ -362,7 +362,7 @@ export class BotService {
                 reply_markup: OrderOptions,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
     }
 
@@ -379,7 +379,7 @@ export class BotService {
             .get(`orders/${orderId}`)
             .then((res) => res.data)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -388,7 +388,7 @@ export class BotService {
                 message_id: +order.AllOrdersMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -397,7 +397,7 @@ export class BotService {
                 message_id: +order.ActiveOrderMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -407,7 +407,7 @@ export class BotService {
                 reply_markup: OrderOptions,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
     }
 
@@ -416,7 +416,7 @@ export class BotService {
             .get(`orders/${orderId}`)
             .then((res) => res.data)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -425,7 +425,7 @@ export class BotService {
                 message_id: +messageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         //* Редактирование в общей группе
@@ -435,11 +435,11 @@ export class BotService {
                 message_id: +order.AllOrdersMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
     }
 
@@ -450,7 +450,7 @@ export class BotService {
             .get(`orders/${orderId}`)
             .then((res) => res.data)
             .catch(() => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -462,7 +462,7 @@ export class BotService {
                     ),
             )
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot
@@ -471,7 +471,7 @@ export class BotService {
                 message_id: +messageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         //* Редактирование в общей группе
@@ -481,11 +481,11 @@ export class BotService {
                 message_id: +order.AllOrdersMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
     }
 
@@ -501,11 +501,11 @@ export class BotService {
                 message_id: +order.AllOrdersMessageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
         //*
 
@@ -515,11 +515,11 @@ export class BotService {
                 message_id: +messageId,
             })
             .catch((error) => {
-                throw new NotFoundException('Telegram error');
+                return null;
             });
 
         await this.bot.deleteMessage(-1002048995957, +order.DistributionOrderMessageId).catch((error) => {
-            throw new NotFoundException('Telegram error');
+            return null;
         });
     }
 }
