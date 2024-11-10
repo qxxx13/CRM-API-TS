@@ -51,28 +51,31 @@ model Order {
 }
 
 model User {
-  Id              Int        @id @default(autoincrement())
-  UserName        String
-  Password        String
-  TelegramChatId  String
-  MessageThreadId String
-  TelegramId      String     @default("")
-  Role            Role       @default(master)
-  IsOnline        Boolean    @default(false)
-  InterestRate    Int        @default(50) // Процентная ставка
-  Status          UserStatus @default(atWork)
-  Salary          Int        @default(0)
-  Order           Order[]    @relation("Order")
-  OrderRef        Order[]    @relation("OrderRef")
-  OrderCreater    Order[]    @relation("OrderCreater")
-  OrderCloser     Order[]    @relation("OrderCloser")
-  Region          String     @default("")
-  Route           Route[]
-  Avatar          Image?     @relation(fields: [AvatarId], references: [Id])
-  AvatarId        Int?
-  Company         Company?   @relation("Workers", fields: [CompanyId], references: [Id])
-  CompanyId       Int?
-  CompanyOwner    Company[]  @relation("Owner")
+  Id               Int             @id @default(autoincrement())
+  UserName         String
+  Password         String
+  TelegramChatId   String
+  MessageThreadId  String
+  TelegramId       String          @default("")
+  Role             Role            @default(master)
+  IsOnline         Boolean         @default(false)
+  InterestRate     Int             @default(50) // Процентная ставка
+  Status           UserStatus      @default(atWork)
+  Salary           Int             @default(0)
+  Order            Order[]         @relation("Order")
+  OrderRef         Order[]         @relation("OrderRef")
+  OrderCreater     Order[]         @relation("OrderCreater")
+  OrderCloser      Order[]         @relation("OrderCloser")
+  Region           String          @default("")
+  Route            Route[]
+  Avatar           Image?          @relation(fields: [AvatarId], references: [Id])
+  AvatarId         Int?
+  Company          Company?        @relation("Workers", fields: [CompanyId], references: [Id])
+  CompanyId        Int?
+  CompanyOwner     Company[]       @relation("Owner")
+  PercentageGrid   PercentageGrid? @relation("Grid", fields: [PercentageGridId], references: [Id])
+  PercentageGridId Int?
+  CompanyInterest  Int?            @default(0)
 }
 
 model Coordinates {
@@ -107,16 +110,37 @@ model Image {
 }
 
 model Company {
-  Id                    Int     @id @default(autoincrement())
-  CompanyName           String
-  TotalCompanyMoney     BigInt
-  PastTotalCompanyMoney BigInt
-  SalaryToSend          Int
-  CompanyWorkers        User[]  @relation("Workers")
-  Primary               Boolean @default(false)
-  PrimaryCompanyId      Int?
-  CompanyOwner          User?   @relation("Owner", references: [Id], fields: [CompanyOwnerId])
-  CompanyOwnerId        Int?
+  Id                     Int     @id @default(autoincrement())
+  CompanyName            String
+  TotalCompanyMoney      Int
+  PastTotalCompanyMoney  Int
+  SalaryToSend           Int
+  CompanyWorkers         User[]  @relation("Workers")
+  Primary                Boolean @default(false)
+  PrimaryCompanyId       Int?
+  CompanyOwner           User?   @relation("Owner", references: [Id], fields: [CompanyOwnerId])
+  CompanyOwnerId         Int?
+  PrimaryCompanyInterest Int?    @default(0)
+}
+
+model PercentageGridItem {
+  Id               Int             @id @default(autoincrement())
+  From             String
+  To               String
+  CheckAmount      String?
+  PercentageGrid   PercentageGrid? @relation("Item", fields: [PercentageGridId], references: [Id])
+  PercentageGridId Int?
+}
+
+model PercentageGrid {
+  Id    Int                  @id @default(autoincrement())
+  Name  String
+  Items PercentageGridItem[] @relation("Item")
+  User  User[]               @relation("Grid")
+}
+
+model Log {
+  Id Int @id @default(autoincrement())
 }
 
 enum RouteStatus {

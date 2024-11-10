@@ -37,8 +37,12 @@ export class UserService {
         return (await user).InterestRate;
     }
 
-    async getAll(role: Role) {
-        return await this.prisma.user.findMany({ where: { Role: role } });
+    async getAll(role: Role, companyId?: number) {
+        return await this.prisma.user.findMany({ where: { Role: role, CompanyId: companyId ? companyId : undefined } });
+    }
+
+    async getAllByCompanyId(companyId: number) {
+        return await this.prisma.user.findMany({ where: { CompanyId: companyId } });
     }
 
     async create(dto: User) {

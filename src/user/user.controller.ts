@@ -26,8 +26,8 @@ export class UserController {
     }
 
     @Get('')
-    async getAllUsers(@Query('role') role: Role | 'all') {
-        return this.userService.getAll(role);
+    async getAllUsers(@Query('role') role: Role | 'all', @Query('companyId') companyId: string) {
+        return this.userService.getAll(role, +companyId);
     }
 
     @Post('')
