@@ -33,8 +33,8 @@ export class OrderService {
     ) {
         const paginate = createPaginator({ perPage });
 
-        const searchByStatus = status !== 'all' ? status : {};
-        const search = searchValue !== '' ? searchValue : {};
+        let searchByStatus = status !== 'all' ? status : {};
+        const search = searchValue !== '' ? searchValue : '';
         const searchByMasterId = masterId !== 'all' ? +masterId : {};
         const searchByIsWorking = isWorking !== 'all' ? isWorking : {};
         const searchByStartDate = startDate !== 'all' ? new Date(startDate) : new Date('2020-01-01');
@@ -46,7 +46,7 @@ export class OrderService {
                 where: {
                     MasterId: searchByMasterId,
                     Status: searchByStatus,
-                    ClientPhoneNumber: search,
+                    ClientPhoneNumber: { contains: search },
                     IsWorking: searchByIsWorking,
                     Date: {
                         lte: searchByEndDate,
@@ -140,11 +140,8 @@ export class OrderService {
             await this.toggleStatus(String(order.Id), OrderStatus.awaitingPayment).catch((e) => console.log(e));
         }
         this.toggleIsWorking(String(order.Id), IsWorkingOrder.close);
-        await serverInstance
-            .patch(`/bot/close?chatId=${chatId}&messageId=${messageId}&orderId=${order.Id}`)
-            .catch((e) => console.log(e));
 
-        return this.prisma.order.update({
+        await this.prisma.order.update({
             where: {
                 Id: order.Id,
             },
@@ -158,6 +155,10 @@ export class OrderService {
                 Debt: +closeData.Debt,
             },
         });
+
+        await serverInstance
+            .patch(`/bot/close?chatId=${chatId}&messageId=${messageId}&orderId=${order.Id}`)
+            .catch((e) => console.log(e));
     }
 
     async delete(id: string, chatId: string, messageId: string) {
