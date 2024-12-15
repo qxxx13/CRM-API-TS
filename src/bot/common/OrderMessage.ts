@@ -4,7 +4,7 @@ import { translate } from 'src/common/translate';
 import { serverInstance } from './instances';
 
 export const TelegramOrderMessage = async (order: Order) => {
-    const orderDate = moment(order.Date).format('DD.MM.YY');
+    const orderDate = `${translate(moment(order.Date).format('dddd'))} ${moment(order.Date).format('DD.MM.YY')}`;
     const orderClientPhoneNumber = order.ClientPhoneNumber.replaceAll('-', '');
 
     const master = (await serverInstance.get(`user/${order.MasterId}`).then((res) => res.data)) as unknown as User;

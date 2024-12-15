@@ -33,8 +33,8 @@ export class OrderService {
     ) {
         const paginate = createPaginator({ perPage });
 
-        let searchByStatus = status !== 'all' ? status : {};
-        const search = searchValue !== '' ? searchValue : '';
+        const searchByStatus = status !== 'all' ? status : {};
+        const search = searchValue !== '' ? '+' + searchValue.substring(1) : '';
         const searchByMasterId = masterId !== 'all' ? +masterId : {};
         const searchByIsWorking = isWorking !== 'all' ? isWorking : {};
         const searchByStartDate = startDate !== 'all' ? new Date(startDate) : new Date('2020-01-01');
@@ -129,16 +129,23 @@ export class OrderService {
         });
     }
 
-    async closeOrder(id: string, closeData: CloseOrderDataType, chatId: string, messageId: string, closerId: string) {
+    async closeOrder(
+        id: string,
+        closeData: CloseOrderDataType,
+        chatId: string,
+        messageId: string,
+        closerId: string,
+        status: OrderStatus,
+    ) {
         const order = await this.getById(id);
 
         await this.patchCloserId(String(order.Id), closerId);
 
-        if (+closeData.Debt !== 0) {
+        /* if (+closeData.Debt !== 0) {
             await this.toggleStatus(String(order.Id), OrderStatus.debt).catch((e) => console.log(e));
         } else {
             await this.toggleStatus(String(order.Id), OrderStatus.awaitingPayment).catch((e) => console.log(e));
-        }
+        } */
         this.toggleIsWorking(String(order.Id), IsWorkingOrder.close);
 
         await this.prisma.order.update({
@@ -153,6 +160,7 @@ export class OrderService {
                 CompanyShare: +closeData.CompanyShare,
                 Comments: closeData.Comments,
                 Debt: +closeData.Debt,
+                Status: status,
             },
         });
 

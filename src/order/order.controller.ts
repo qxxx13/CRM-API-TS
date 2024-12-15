@@ -16,7 +16,6 @@ import { OrderService } from './order.service';
 import { IsWorkingOrder, Order, OrderStatus } from '@prisma/client';
 import { CloseOrderDataType } from 'src/common/types';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { serverInstance } from 'src/bot/common/instances';
 
 @Controller('orders')
 export class OrderController {
@@ -75,9 +74,10 @@ export class OrderController {
         @Query('chatId') chatId: string,
         @Query('messageId') messageId: string,
         @Query('closerId') closerId: string,
+        @Query('status') status: OrderStatus,
         @Body() closeData: CloseOrderDataType,
     ) {
-        return this.orderService.closeOrder(id, closeData, chatId, messageId, closerId);
+        return this.orderService.closeOrder(id, closeData, chatId, messageId, closerId, status);
     }
 
     @Get('masterId/:id')

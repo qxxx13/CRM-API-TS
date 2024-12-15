@@ -44,7 +44,6 @@ export class CompanyService {
     async toggleTotalCompanyMoney(id: number, sum: number) {
         const company = await this.prisma.company.findFirst({ where: { Id: id } });
         const total = company.TotalCompanyMoney;
-        const past = company.PastTotalCompanyMoney;
 
         /* console.log('sum:', sum, 'total:', total, 'past:', past); */
 
