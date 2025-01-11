@@ -38,7 +38,10 @@ export class UserService {
     }
 
     async getAll(role: Role, companyId?: number) {
-        return await this.prisma.user.findMany({ where: { Role: role, CompanyId: companyId ? companyId : undefined } });
+        return await this.prisma.user.findMany({
+            where: { Role: role, CompanyId: companyId ? companyId : undefined },
+            orderBy: { Id: 'desc' },
+        });
     }
 
     async getAllByCompanyId(companyId: number) {
