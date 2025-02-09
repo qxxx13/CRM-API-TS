@@ -8,9 +8,19 @@ import { BotModule } from './bot/bot.module';
 import { PromouterModule } from './promouter/promouter.module';
 import { FilesModule } from './files/files.module';
 import { CompanyModule } from './company/company.module';
+import { PercentageGridModule } from './percentageGrid/percentageGrid.module';
 
 @Module({
-    imports: [OrderModule, UserModule, AuthModule, BotModule, PromouterModule, FilesModule, CompanyModule],
+    imports: [
+        OrderModule,
+        UserModule,
+        AuthModule,
+        BotModule,
+        PromouterModule,
+        FilesModule,
+        CompanyModule,
+        PercentageGridModule,
+    ],
     controllers: [AppController],
     providers: [AppService],
 })

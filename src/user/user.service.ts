@@ -37,6 +37,11 @@ export class UserService {
         return (await user).InterestRate;
     }
 
+    async getPercentageByMasterId(id: string) {
+        const user = this.prisma.user.findFirst({ where: { Id: +id } });
+        return (await user).PercentageGridId;
+    }
+
     async getAll(role: Role, companyId?: number) {
         return await this.prisma.user.findMany({
             where: { Role: role, CompanyId: companyId ? companyId : undefined },

@@ -58,6 +58,11 @@ export class UserController {
         return this.userService.getInterestRateById(id);
     }
 
+    @Get('percentageGrid/:id')
+    async getPercentageGrid(@Param('id') id: string) {
+        return this.userService.getPercentageByMasterId(id);
+    }
+
     @Patch('status')
     async toggleUserStatus(@Query('id') userId: string, @Query('status') status: UserStatus) {
         return this.userService.toggleStatus(userId, status);
