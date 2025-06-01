@@ -48,6 +48,8 @@ model Order {
   BotMessage                 String         @default("") @db.VarChar(500)
   IsWorking                  IsWorkingOrder @default(close)
   Type                       OrderType
+  HiddenDescription          String?
+  Source                     OrderSource?
 }
 
 model User {
@@ -76,6 +78,7 @@ model User {
   PercentageGrid   PercentageGrid? @relation("Grid", fields: [PercentageGridId], references: [Id])
   PercentageGridId Int?
   CompanyInterest  Int?            @default(0)
+  ContestStars     Int?            @default(0)
 }
 
 model Coordinates {
@@ -147,6 +150,12 @@ enum RouteStatus {
   pending // Ожидает
   active // Активен
   atWork // В Работе
+}
+
+enum OrderSource {
+  PaperAdvertising // Листовка
+  Newspaper // Газета
+  Avito // Авито
 }
 
 enum OrderStatus {
