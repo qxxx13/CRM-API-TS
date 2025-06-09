@@ -25,7 +25,7 @@ export class BotService {
 
         //?Отправка сообщения мастеру
         await this.bot
-            .sendMessage(+chatId, 'Новая заявка', { message_thread_id: +messageThreadId })
+            .sendMessage(+chatId, await TelegramOrderMessage(order), { message_thread_id: +messageThreadId })
             .then(async (msg: TelegramBot.Message) => (msgId = msg.message_id))
             .catch((error) => {
                 return null;
@@ -37,7 +37,7 @@ export class BotService {
             ],
         };
 
-        await this.bot.editMessageText('Новая заявка', {
+        await this.bot.editMessageText(await TelegramOrderMessage(order), {
             chat_id: chatId,
             message_id: msgId,
             reply_markup: takeOrderOptions,
