@@ -7,6 +7,21 @@ import { CloseOrderDataType } from 'src/common/types';
 import { serverInstance } from 'src/bot/common/instances';
 import { FilesService } from 'src/files/files.service';
 
+export interface OrderStatsParams {
+    dispId?: number;
+    startDate?: string;
+    endDate?: string;
+    minTotal?: number;
+    maxTotal?: number;
+}
+
+export interface OrderStatsResult {
+    count: number;
+    totalSum: number;
+    totalExpenses: number;
+    totalCompanyShare: number;
+}
+
 @Injectable()
 export class OrderService {
     constructor(
@@ -15,10 +30,15 @@ export class OrderService {
     ) {}
 
     async getById(id: string) {
-        const order = await this.prisma.order.findUnique({ where: { Id: +id } });
+        const order = await this.prisma.order.findUnique({
+            where: {
+                Id: parseInt(id), // Преобразуем строку в число
+            },
+        });
         if (!order) {
             throw new NotFoundException('Order not found!');
-        } else return order;
+        }
+        return order;
     }
 
     async getAll(
@@ -273,5 +293,60 @@ export class OrderService {
                 ReasonImageId: image.Id,
             },
         });
+    }
+
+    async getOrderStats(params: OrderStatsParams): Promise<OrderStatsResult> {
+        const { dispId, startDate, endDate, minTotal, maxTotal } = params;
+
+        const where: any = {};
+
+        if (dispId) {
+            where.DispId = dispId;
+        }
+
+        if (startDate && endDate) {
+            where.Date = {
+                gte: new Date(startDate), // Преобразуем строку в Date
+                lte: new Date(endDate), // Преобразуем строку в Date
+            };
+        } else if (startDate) {
+            where.Date = {
+                gte: new Date(startDate),
+            };
+        } else if (endDate) {
+            where.Date = {
+                lte: new Date(endDate),
+            };
+        }
+
+        // Остальная логика без изменений
+        if (minTotal !== undefined && maxTotal !== undefined) {
+            where.Total = {
+                gte: minTotal,
+                lte: maxTotal,
+            };
+        } else if (minTotal !== undefined) {
+            where.Total = {
+                gte: minTotal,
+            };
+        } else if (maxTotal !== undefined) {
+            where.Total = {
+                lte: maxTotal,
+            };
+        }
+
+        const orders = await this.prisma.order.findMany({ where });
+
+        const count = orders.length;
+        const totalSum = orders.reduce((sum, order) => sum + (order.Total || 0), 0);
+        const totalExpenses = orders.reduce((sum, order) => sum + (order.Expenses || 0), 0);
+        const totalCompanyShare = orders.reduce((sum, order) => sum + (order.CompanyShare || 0), 0);
+
+        return {
+            count,
+            totalSum,
+            totalExpenses,
+            totalCompanyShare,
+        };
     }
 }

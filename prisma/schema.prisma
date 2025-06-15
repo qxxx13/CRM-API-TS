@@ -197,6 +197,7 @@ enum UserStatus {
 
 enum Visit {
   primary // Первичный
+  primaryUrgent // первичный срочный
   repeated // Повторный
   guarantee //Гарантия
 }

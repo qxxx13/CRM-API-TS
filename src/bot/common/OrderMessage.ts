@@ -1,4 +1,4 @@
-import { Order, User } from '@prisma/client';
+import { Order, User, Visit } from '@prisma/client';
 import * as moment from 'moment';
 import { translate } from 'src/common/translate';
 import { serverInstance } from './instances';
@@ -12,6 +12,16 @@ export const TelegramOrderMessage = async (order: Order) => {
     const comments = order.Comments ? `Комментарий: ${order.Comments}` : '';
     const debt = order.Debt ? `Долг: ${order.Debt}` : '';
 
+    // Добавляем смайлики и форматирование для разных типов визитов
+    const visitEmojiMap = {
+        [Visit.primary]: '🆕', // Новый клиент
+        [Visit.primaryUrgent]: '🚨🆕', // Срочный новый клиент
+        [Visit.repeated]: '↩️', // Повторный визит
+        [Visit.guarantee]: '🛡️', // Гарантия
+    };
+
+    const visitDisplay = `${visitEmojiMap[order.Visit] || ''} ${translate(order.Visit)}`.trim();
+
     if (order.Status === 'debt' || order.Status === 'awaitingPayment' || order.Status === 'fulfilled') {
         return `#${order.Id}
 ${translate(order.Status)}
@@ -19,7 +29,7 @@ ${translate(order.Status)}
 
 Мастер: ${master.UserName}
 
-Визит: ${translate(order.Visit)}
+Визит: ${visitDisplay}
 Дата: ${orderDate}
 Время: ${order.Time}
 Номер: ${orderClientPhoneNumber}
@@ -48,7 +58,7 @@ ${translate(order.Status)}
 
 Мастер: ${master.UserName}
 
-Визит: ${translate(order.Visit)}
+Визит: ${visitDisplay}
 Дата: ${orderDate}
 Время: ${order.Time}
 Номер: ${orderClientPhoneNumber}

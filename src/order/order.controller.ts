@@ -12,7 +12,7 @@ import {
     UseInterceptors,
     UploadedFile,
 } from '@nestjs/common';
-import { OrderService } from './order.service';
+import { OrderService, OrderStatsParams } from './order.service';
 import { IsWorkingOrder, Order, OrderStatus } from '@prisma/client';
 import { CloseOrderDataType } from 'src/common/types';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -20,11 +20,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @Controller('orders')
 export class OrderController {
     constructor(private readonly orderService: OrderService) {}
-
-    @Get(':id')
-    async getOrderById(@Param('id') id: string) {
-        return this.orderService.getById(id);
-    }
 
     @Get('')
     async getOrders(
@@ -119,5 +114,29 @@ export class OrderController {
     @Patch('orderMessage')
     async toggleOrderMessageArr(@Query('orderId') orderId: string, @Query('orderMessage') orderMessage: string) {
         return this.orderService.toggleOrderMessage(orderId, orderMessage);
+    }
+
+    @Get('/orderStats')
+    async getStats(
+        @Query('dispId') dispId?: number,
+        @Query('startDate') startDate?: string,
+        @Query('endDate') endDate?: string,
+        @Query('minTotal') minTotal?: number,
+        @Query('maxTotal') maxTotal?: number,
+    ) {
+        const params: OrderStatsParams = {
+            dispId: dispId ? Number(dispId) : undefined,
+            startDate: startDate ? startDate : undefined,
+            endDate: endDate ? endDate : undefined,
+            minTotal: minTotal ? Number(minTotal) : undefined,
+            maxTotal: maxTotal ? Number(maxTotal) : undefined,
+        };
+
+        return this.orderService.getOrderStats(params);
+    }
+
+    @Get(':id')
+    async getOrderById(@Param('id') id: string) {
+        return this.orderService.getById(id);
     }
 }
