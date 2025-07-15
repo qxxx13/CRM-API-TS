@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Order, User } from '@prisma/client';
 import * as TelegramBot from 'node-telegram-bot-api';
 import { TelegramOrderMessage } from './common/OrderMessage';
-import { serverInstance } from './common/instances';
+import { botReportInstance, serverInstance } from './common/instances';
 
 @Injectable()
 export class BotService {
@@ -23,9 +23,11 @@ export class BotService {
 
         let msgId: number;
 
+        const message = await TelegramOrderMessage(order);
+
         //?Отправка сообщения мастеру
         await this.bot
-            .sendMessage(+chatId, await TelegramOrderMessage(order), { message_thread_id: +messageThreadId })
+            .sendMessage(+chatId, message, { message_thread_id: +messageThreadId })
             .then(async (msg: TelegramBot.Message) => (msgId = msg.message_id))
             .catch((error) => {
                 return null;
@@ -37,7 +39,7 @@ export class BotService {
             ],
         };
 
-        await this.bot.editMessageText(await TelegramOrderMessage(order), {
+        await this.bot.editMessageText(message, {
             chat_id: chatId,
             message_id: msgId,
             reply_markup: takeOrderOptions,
@@ -52,7 +54,7 @@ export class BotService {
 
         //* Отправка во все заявки
         await this.bot
-            .sendMessage(-1002048995957, await TelegramOrderMessage(order), { message_thread_id: 4 })
+            .sendMessage(-1002048995957, message, { message_thread_id: 4 })
             .then(
                 async (msg: TelegramBot.Message) =>
                     await serverInstance.patch(
@@ -66,7 +68,7 @@ export class BotService {
 
         //* Отправка в активные
         await this.bot
-            .sendMessage(-1002048995957, await TelegramOrderMessage(order), { message_thread_id: 958 })
+            .sendMessage(-1002048995957, message, { message_thread_id: 958 })
             .then(
                 async (msg: TelegramBot.Message) =>
                     await serverInstance.patch(
@@ -77,6 +79,18 @@ export class BotService {
                 return null;
             });
         //*
+
+        await botReportInstance
+            .post('application/update', {
+                app_number: `#order.Id`,
+                phone_number: order.ClientPhoneNumber,
+                master: message.match(/Мастер: (.+)/)?.[1],
+                description: order.Description,
+                /* revenue: 25000,
+                expense: 5000,
+                profit: 20000, */
+            })
+            .catch(() => {});
     }
 
     async distributionOrderBotMessage(order: Order) {
@@ -155,46 +169,60 @@ export class BotService {
             ],
         };
 
+        const message = await TelegramOrderMessage(order);
+
         //* Изменение в распределении
         await this.bot
-            .editMessageText(await TelegramOrderMessage(order), {
+            .editMessageText(message, {
                 chat_id: -1002048995957,
                 message_id: +order.DistributionOrderMessageId,
             })
-            .catch((error) => {
+            .catch(() => {
                 return null;
             });
 
         //* Изменение во всех заявках
         await this.bot
-            .editMessageText(await TelegramOrderMessage(order), {
+            .editMessageText(message, {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             })
-            .catch((error) => {
+            .catch(() => {
                 return null;
             });
 
         //* Изменение в активных
         await this.bot
-            .editMessageText(await TelegramOrderMessage(order), {
+            .editMessageText(message, {
                 chat_id: -1002048995957,
                 message_id: +order.ActiveOrderMessageId,
             })
-            .catch((error) => {
+            .catch(() => {
                 return null;
             });
 
         //?Изменение сообщения у мастера
         await this.bot
-            .editMessageText(await TelegramOrderMessage(order), {
+            .editMessageText(message, {
                 chat_id: chatId,
                 message_id: +order.MessageId,
                 reply_markup: OrderOptions,
             })
-            .catch((error) => {
+            .catch(() => {
                 return null;
             });
+
+        await botReportInstance
+            .post('application/update', {
+                app_number: `#order.Id`,
+                phone_number: order.ClientPhoneNumber,
+                master: message.match(/Мастер: (.+)/)?.[1],
+                description: order.Description,
+                /* revenue: 25000,
+                expense: 5000,
+                profit: 20000, */
+            })
+            .catch(() => {});
     }
 
     async deleteOrderBotMessage(chatId: string, messageId: string, orderId: string) {
@@ -419,28 +447,43 @@ export class BotService {
                 return null;
             });
 
+        const message = await TelegramOrderMessage(order);
+
         await this.bot
-            .editMessageText(await TelegramOrderMessage(order), {
+            .editMessageText(message, {
                 chat_id: chatId,
                 message_id: +messageId,
             })
-            .catch((error) => {
+            .catch(() => {
                 return null;
             });
 
         //* Редактирование в общей группе
         await this.bot
-            .editMessageText(await TelegramOrderMessage(order), {
+            .editMessageText(message, {
                 chat_id: -1002048995957,
                 message_id: +order.AllOrdersMessageId,
             })
-            .catch((error) => {
+            .catch(() => {
                 return null;
             });
 
         await this.bot.deleteMessage(-1002048995957, +order.ActiveOrderMessageId).catch((error) => {
             return null;
         });
+
+        await botReportInstance.post('report', { report_text: message }).catch(() => {});
+        await botReportInstance
+            .post('application/update', {
+                app_number: `#order.Id`,
+                phone_number: order.ClientPhoneNumber,
+                master: message.match(/Мастер: (.+)/)?.[1],
+                description: order.Description,
+                revenue: order?.Total || 0,
+                expense: order?.Expenses || 0,
+                profit: (order?.Total || 0) - (order?.Expenses || 0),
+            })
+            .catch(() => {});
     }
 
     async rejectByMasterOrderBotMessage(chatId: string, messageId: string, orderId: string) {
