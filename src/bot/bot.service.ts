@@ -82,7 +82,7 @@ export class BotService {
 
         await botReportInstance
             .post('application/update', {
-                app_number: `#order.Id`,
+                app_number: `#${order.Id}`,
                 phone_number: order.ClientPhoneNumber,
                 master: message.match(/Мастер: (.+)/)?.[1],
                 description: order.Description,
@@ -214,7 +214,7 @@ export class BotService {
 
         await botReportInstance
             .post('application/update', {
-                app_number: `#order.Id`,
+                app_number: `#${order.Id}`,
                 phone_number: order.ClientPhoneNumber,
                 master: message.match(/Мастер: (.+)/)?.[1],
                 description: order.Description,
@@ -475,7 +475,7 @@ export class BotService {
         await botReportInstance.post('report', { report_text: message }).catch(() => {});
         await botReportInstance
             .post('application/update', {
-                app_number: `#order.Id`,
+                app_number: `#${order.Id}`,
                 phone_number: order.ClientPhoneNumber,
                 master: message.match(/Мастер: (.+)/)?.[1],
                 description: order.Description,
