@@ -93,6 +93,8 @@ export class BotService {
                 profit: 20000, */
             })
             .catch(() => {});
+
+        await botReportInstance.post('application/report', { report_text: message }).catch(() => {});
     }
 
     async distributionOrderBotMessage(order: Order) {
@@ -227,6 +229,8 @@ export class BotService {
                 profit: 20000, */
             })
             .catch(() => {});
+
+        await botReportInstance.post('application/report', { report_text: message }).catch(() => {});
     }
 
     async deleteOrderBotMessage(chatId: string, messageId: string, orderId: string) {
